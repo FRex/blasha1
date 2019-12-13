@@ -7,26 +7,17 @@ fi
 
 function echoer() { echo >/dev/stderr "$@"; }
 
-(
-    rampin -0q "$fname" || echoer
+cmds=(
+    'rampin -0q'
+    'openssl sha1'
+    'sha1sum'
+    'busybox sha1sum'
+    './b.exe'
+    'python sha1.py'
+)
 
-    echoer -n "openssl sha1 $fname: "
-    time openssl sha1 "$fname" | sed 's:SHA1(\(.*\))= \(.*\):\2 *\1:'
+for cmd in "${cmds[@]}"; do
+    echoer -n "$cmd $fname: "
+    time $cmd "$fname" #intentionally no "" around $cmd for cmds with params!
     echoer
-
-    echoer -n "sha1sum $fname: "
-    time sha1sum "$fname"
-    echoer
-
-    echoer -n "busybox sha1sum $fname: "
-    time busybox sha1sum "$fname" | sed 's:  : *:'
-    echoer
-
-    echoer -n "./b.exe $fname: "
-    time ./b.exe "$fname"
-    echoer
-
-    echoer -n "python sha1.py $fname: "
-    time python sha1.py "$fname"
-    echoer
-) | dos2unix | uniq -c
+done | sed 's:SHA1(\(.*\))= \(.*\):\2 *\1:;s:  : *:' | dos2unix | uniq -c
