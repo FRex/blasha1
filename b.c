@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "other.h"
-#include "bsha1.h"
+#include "blasha1.h"
 
 int main(int argc, char ** argv)
 {
@@ -15,7 +15,7 @@ int main(int argc, char ** argv)
     }
 
     char textdigest[41];
-    muhsha1_text(file.ptr, file.size, textdigest);
+    blasha1_text(file.ptr, file.size, textdigest);
     printf("%s *%s\n", textdigest, argv[1]);
     unmapfile(&file);
 }

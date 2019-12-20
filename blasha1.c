@@ -1,17 +1,17 @@
-#include "bsha1.h"
+#include "blasha1.h"
 #include <string.h>
 
-static u32 bigU32(const byte * bytes)
+static blasha1_u32_t bigU32(const blasha1_byte_t * bytes)
 {
     return (bytes[0] << 24) | (bytes[1] << 16) | (bytes[2] << 8) | (bytes[3]);
 }
 
-static u32 leftrotate(u32 n, int amount)
+static blasha1_u32_t leftrotate(blasha1_u32_t n, int amount)
 {
     return (n << amount) | (n >> (32 - amount));
 }
 
-static void blow16to80(const byte * chunk, u32 * w)
+static void blow16to80(const blasha1_byte_t * chunk, blasha1_u32_t * w)
 {
     for(int i = 0; i < 16; ++i)
         w[i] = bigU32(chunk + i * 4);
@@ -20,15 +20,15 @@ static void blow16to80(const byte * chunk, u32 * w)
         w[i] = leftrotate(w[i - 3] ^ w[i - 8] ^ w[i - 14] ^ w[i - 16], 1);
 }
 
-static void dochunk(const u32 * w, u32 * h)
+static void dochunk(const blasha1_u32_t * w, blasha1_u32_t * h)
 {
-    u32 a = h[0];
-    u32 b = h[1];
-    u32 c = h[2];
-    u32 d = h[3];
-    u32 e = h[4];
+    blasha1_u32_t a = h[0];
+    blasha1_u32_t b = h[1];
+    blasha1_u32_t c = h[2];
+    blasha1_u32_t d = h[3];
+    blasha1_u32_t e = h[4];
 
-#define QCHUNK(i, k, f){const u32 tmp = leftrotate(a, 5) + (f) + e + (k) + w[i]; e = d; d = c; c = leftrotate(b, 30); b = a; a = tmp;}
+#define QCHUNK(i, k, f){const blasha1_u32_t tmp = leftrotate(a, 5) + (f) + e + (k) + w[i]; e = d; d = c; c = leftrotate(b, 30); b = a; a = tmp;}
     QCHUNK(0, 0x5a827999u, (b & c) | ((~b) & d));
     QCHUNK(1, 0x5a827999u, (b & c) | ((~b) & d));
     QCHUNK(2, 0x5a827999u, (b & c) | ((~b) & d));
@@ -118,24 +118,24 @@ static void dochunk(const u32 * w, u32 * h)
     h[4] += e;
 }
 
-static void writeBigU64(byte * ptr, u64 value)
+static void writeBigU64(blasha1_byte_t * ptr, blasha1_u64_t value)
 {
     for(int i = 0; i < 8; ++i)
         ptr[i] = (value >> (8 * (7 - i))) & 0xff;
 }
 
-static void writeBigU32(byte * ptr, u32 value)
+static void writeBigU32(blasha1_byte_t * ptr, blasha1_u32_t value)
 {
     for(int i = 0; i < 4; ++i)
         ptr[i] = (value >> (8 * (3 - i))) & 0xff;
 }
 
-void muhsha1(const void * data, u64 datalen, byte * digest20)
+void blasha1_binary(const void * data, blasha1_u64_t datalen, blasha1_byte_t * digest20)
 {
-    const byte * ptr = (const byte*)data;
-    u64 ptrlen = datalen;
-    u32 h[5] = { 0x67452301u, 0xefcdab89u, 0x98badcfeu, 0x10325476u, 0xc3d2e1F0u };
-    u32 w[80];
+    const blasha1_byte_t * ptr = (const blasha1_byte_t*)data;
+    blasha1_u64_t ptrlen = datalen;
+    blasha1_u32_t h[5] = { 0x67452301u, 0xefcdab89u, 0x98badcfeu, 0x10325476u, 0xc3d2e1F0u };
+    blasha1_u32_t w[80];
 
     while(ptrlen >= 64)
     {
@@ -145,7 +145,7 @@ void muhsha1(const void * data, u64 datalen, byte * digest20)
         ptrlen -= 64;
     }
 
-    byte tmp[2 * 64];
+    blasha1_byte_t tmp[2 * 64];
     memset(tmp, 0x0, 2 * 64);
     for(int i = 0; i < (int)ptrlen; ++i)
         tmp[i] = ptr[i];
@@ -181,7 +181,7 @@ static char hexdigit(int val)
     return 'f';
 }
 
-static void binary_digest_to_hex(const byte * d20, char * hex41)
+static void binary_digest_to_hex(const blasha1_byte_t * d20, char * hex41)
 {
     for(int i = 0; i < 20; ++i)
     {
@@ -191,9 +191,9 @@ static void binary_digest_to_hex(const byte * d20, char * hex41)
     hex41[40] = '\0';
 }
 
-void muhsha1_text(const void * data, u64 datalen, char * digest41)
+void blasha1_text(const void * data, blasha1_u64_t datalen, char * digest41)
 {
-    byte d[20];
-    muhsha1(data, datalen, d);
+    blasha1_byte_t d[20];
+    blasha1_binary(data, datalen, d);
     binary_digest_to_hex(d, digest41);
 }
