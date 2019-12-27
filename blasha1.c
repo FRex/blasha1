@@ -220,20 +220,62 @@ void blasha1_init(blasha1_t * c)
 
 void blasha1_update(blasha1_t * c, const void * data, blasha1_u64_t datalen)
 {
-    blasha1_u64_t i;
     const blasha1_byte_t * bytes = (const blasha1_byte_t *)data;
 
-    for(i = 0; i < datalen; ++i)
+    if(c->size % 64 == 0)
     {
-        c->data[c->size % 64] = bytes[i];
-        ++c->size;
+        while(datalen >= 64)
+        {
+            blasha1_u32_t w[80];
+            blasha1_priv_blow16to80(bytes, w);
+            blasha1_priv_dochunk(w, c->h);
+            bytes += 64;
+            datalen -= 64;
+            c->size += 64;
+        } /* while */
+    } /* if */
+
+    while(datalen > 0)
+    {
+        c->data[c->size % 64] = bytes[0];
+        bytes += 1;
+        datalen -= 1;
+        c->size += 1;
         if(c->size % 64 == 0)
         {
             blasha1_u32_t w[80];
             blasha1_priv_blow16to80(c->data, w);
             blasha1_priv_dochunk(w, c->h);
-        } /* if */
-    } /* for */
+            break;
+        }
+    }
+
+    if(c->size % 64 == 0)
+    {
+        while(datalen >= 64)
+        {
+            blasha1_u32_t w[80];
+            blasha1_priv_blow16to80(bytes, w);
+            blasha1_priv_dochunk(w, c->h);
+            bytes += 64;
+            datalen -= 64;
+            c->size += 64;
+        } /* while */
+    } /* if */
+
+    while(datalen > 0)
+    {
+        c->data[c->size % 64] = bytes[0];
+        bytes += 1;
+        datalen -= 1;
+        c->size += 1;
+        if(c->size % 64 == 0)
+        {
+            blasha1_u32_t w[80];
+            blasha1_priv_blow16to80(c->data, w);
+            blasha1_priv_dochunk(w, c->h);
+        }
+    }
 }
 
 void blasha1_get_binary(const blasha1_t * c, blasha1_byte_t * digest20)
