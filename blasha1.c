@@ -207,3 +207,70 @@ void blasha1_text(const void * data, blasha1_u64_t datalen, char * digest41)
     blasha1_binary(data, datalen, d);
     blasha1_priv_binary_digest_to_hex(d, digest41);
 }
+
+void blasha1_init(blasha1_t * c)
+{
+    c->size = 0;
+    c->h[0] = 0x67452301u;
+    c->h[1] = 0xefcdab89u;
+    c->h[2] = 0x98badcfeu;
+    c->h[3] = 0x10325476u;
+    c->h[4] = 0xc3d2e1F0u;
+}
+
+void blasha1_update(blasha1_t * c, const void * data, blasha1_u64_t datalen)
+{
+    blasha1_u64_t i;
+    const blasha1_byte_t * bytes = (const blasha1_byte_t *)data;
+
+    for(i = 0; i < datalen; ++i)
+    {
+        c->data[c->size % 64] = bytes[i];
+        ++c->size;
+        if(c->size % 64 == 0)
+        {
+            blasha1_u32_t w[80];
+            blasha1_priv_blow16to80(c->data, w);
+            blasha1_priv_dochunk(w, c->h);
+        } /* if */
+    } /* for */
+}
+
+void blasha1_get_binary(const blasha1_t * c, blasha1_byte_t * digest20)
+{
+    blasha1_u32_t h[5] = { c->h[0], c->h[1], c->h[2], c->h[3], c->h[4] };
+    blasha1_u32_t w[80];
+    blasha1_byte_t tmp[2 * 64];
+    int lastchunklen, i;
+
+    memset(tmp, 0x0, 2 * 64);
+    lastchunklen = (int)(c->size % 64);
+    for(i = 0; i < lastchunklen; ++i)
+        tmp[i] = c->data[i];
+
+    tmp[lastchunklen] = 0x80u;
+    if(lastchunklen < 56)
+    {
+        blasha1_priv_writeBigU64(tmp + 56, c->size * 8);
+        blasha1_priv_blow16to80(tmp, w);
+        blasha1_priv_dochunk(w, h);
+    }
+    else
+    {
+        blasha1_priv_writeBigU64(tmp + 64 + 56, c->size * 8);
+        blasha1_priv_blow16to80(tmp, w);
+        blasha1_priv_dochunk(w, h);
+        blasha1_priv_blow16to80(tmp + 64, w);
+        blasha1_priv_dochunk(w, h);
+    }
+
+    for(i = 0; i < 5; ++i)
+        blasha1_priv_writeBigU32(digest20 + i * 4, h[i]);
+}
+
+void blasha1_get_text(const blasha1_t * c, char * digest41)
+{
+    blasha1_byte_t d[20];
+    blasha1_get_binary(c, d);
+    blasha1_priv_binary_digest_to_hex(d, digest41);
+}
