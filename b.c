@@ -5,9 +5,14 @@
 
 int main(int argc, char ** argv)
 {
-    struct MappedFile file;
-    int i;
     blasha1_t c;
+    struct MappedFile file;
+    char textdigest[41];
+    int i;
+    const int single = NULL == strstr(argv[0], "a.exe");
+
+    if(argc == 1)
+        fprintf(stderr, "single = %d\n", single);
 
     for(i = 1; i < argc; ++ i)
     {
@@ -19,10 +24,17 @@ int main(int argc, char ** argv)
             continue;
         }
 
-        blasha1_init(&c);
-        blasha1_update(&c, file.ptr, file.size);
-        char textdigest[41];
-        blasha1_get_text(&c, textdigest);
+        if(single)
+        {
+            blasha1_text(file.ptr, file.size, textdigest);
+        }
+        else
+        {
+            blasha1_init(&c);
+            blasha1_update(&c, file.ptr, file.size);
+            blasha1_get_text(&c, textdigest);
+        }
+
         unmapfile(&file);
         printf("%s *%s\n", textdigest, argv[i]);
     }
