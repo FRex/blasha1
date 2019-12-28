@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include "blasha1.h"
 
-#define mybufsize (64 * 1024 * 1024)
+#define mybufsize (1 * 1024 * 1024)
 
 int main(int argc, char ** argv)
 {
