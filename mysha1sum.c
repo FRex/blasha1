@@ -18,7 +18,6 @@ int main(int argc, char ** argv)
     for(i = 1; i < argc; ++i)
     {
         FILE * f = fopen(argv[i], "rb");
-        size_t readc;
 
         if(!f)
         {

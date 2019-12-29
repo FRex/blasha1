@@ -6,6 +6,7 @@ typedef uint32_t u32;
 typedef uint64_t u64;
 typedef unsigned char byte;
 
+/*
 static double mytime(void)
 {
     LARGE_INTEGER freq, ret;
@@ -13,6 +14,7 @@ static double mytime(void)
     QueryPerformanceCounter(&ret);
     return ((double)ret.QuadPart) / ((double)freq.QuadPart);
 }
+*/
 
 struct MappedFile
 {

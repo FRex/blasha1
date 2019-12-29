@@ -138,10 +138,11 @@ static void blasha1_priv_writeBigU32(blasha1_byte_t * ptr, blasha1_u32_t value)
 
 void blasha1_binary(const void * data, blasha1_u64_t datalen, blasha1_byte_t * digest20)
 {
-    const blasha1_byte_t * ptr = (const blasha1_byte_t*)data;
-    blasha1_u64_t ptrlen = datalen;
     blasha1_u32_t h[5] = { 0x67452301u, 0xefcdab89u, 0x98badcfeu, 0x10325476u, 0xc3d2e1F0u };
     blasha1_u32_t w[80];
+    blasha1_byte_t tmp[2 * 64];
+    const blasha1_byte_t * ptr = (const blasha1_byte_t*)data;
+    blasha1_u64_t ptrlen = datalen;
     int i;
 
     while(ptrlen >= 64)
@@ -152,7 +153,6 @@ void blasha1_binary(const void * data, blasha1_u64_t datalen, blasha1_byte_t * d
         ptrlen -= 64;
     }
 
-    blasha1_byte_t tmp[2 * 64];
     memset(tmp, 0x0, 2 * 64);
     for(i = 0; i < (int)ptrlen; ++i)
         tmp[i] = ptr[i];
