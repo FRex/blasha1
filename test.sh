@@ -18,6 +18,9 @@ cmds=(
     'python sha1.py'
 )
 
+du -h "$fname"
+echo
+
 for cmd in "${cmds[@]}"; do
     echoer -n "$cmd $fname: "
     time $cmd "$fname" #intentionally no "" around $cmd for cmds with params!
