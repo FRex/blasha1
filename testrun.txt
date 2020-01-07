@@ -1,0 +1,34 @@
+$ ./test.sh F:/isos/openSUSE-Tumbleweed-DVD-x86_64-Snapshot20190726-Media.iso
+4.4G    F:/isos/openSUSE-Tumbleweed-DVD-x86_64-Snapshot20190726-Media.iso
+
+rampin -0q F:/isos/openSUSE-Tumbleweed-DVD-x86_64-Snapshot20190726-Media.iso:
+real    0m1.942s
+user    0m0.000s
+sys     0m0.030s
+
+openssl sha1 F:/isos/openSUSE-Tumbleweed-DVD-x86_64-Snapshot20190726-Media.iso:
+real    0m8.187s
+user    0m0.000s
+sys     0m0.031s
+
+sha1sum F:/isos/openSUSE-Tumbleweed-DVD-x86_64-Snapshot20190726-Media.iso:
+real    0m10.141s
+user    0m9.031s
+sys     0m1.109s
+
+busybox sha1sum F:/isos/openSUSE-Tumbleweed-DVD-x86_64-Snapshot20190726-Media.iso:
+real    0m28.246s
+user    0m0.015s
+sys     0m0.000s
+
+./mysha1sum.exe F:/isos/openSUSE-Tumbleweed-DVD-x86_64-Snapshot20190726-Media.iso:
+real    0m12.395s
+user    0m0.000s
+sys     0m0.030s
+
+python sha1.py F:/isos/openSUSE-Tumbleweed-DVD-x86_64-Snapshot20190726-Media.iso:
+real    0m12.350s
+user    0m0.015s
+sys     0m0.015s
+
+      5 72fbafcafe5b0e112f0a5b1ff8771e4f0e73149b *F:/isos/openSUSE-Tumbleweed-DVD-x86_64-Snapshot20190726-Media.iso
