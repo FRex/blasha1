@@ -12,8 +12,6 @@ cmds=(
     'openssl sha1'
     'sha1sum'
     'busybox sha1sum'
-    './a.exe'
-    './b.exe'
     './mysha1sum.exe'
     'python sha1.py'
 )
