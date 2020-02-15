@@ -12,7 +12,7 @@ small utils like [FRex/pixelsum](https://github.com/FRex/pixelsum) and others.
 In `test.sh` there is a bit of `bash` and `sed` code to run a few different
 SHA1 implementations (`openssl sha1` from `OpenSSL 1.1.1d  10 Sep 2019`, GNU
 coreutils `sha1sum`, `busybox sha1sum` 64-bit Windows build from
-(frippery.org)[frippery.org], `hashlib.sha1` in Python 3.7.3, and this
+[frippery.org](https://frippery.org), `hashlib.sha1` in Python 3.7.3, and this
 implementation compiled with `realgcc.exe (Rev1, Built by MSYS2 project) 7.2.0`
 with `-O2`) on a given file, and make sure their output is same format and
 collapsed into one line, and display how long they each took.
