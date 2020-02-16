@@ -36,3 +36,22 @@ These results will vary by OS, system, implementation, compilers used, etc. but
 they are still curious, e.g. the fact that a simple C implementation in portable
 pure C with `gcc -O2` can compete with GNU coreutils and OpenSSL binaries and
 not lose by much.
+
+In `bench.py` there is a Python script that does a test similar to one done by
+`test.sh` but prints the sorted hashing speeds (file size divided by time
+taken, so it favors big files where startup) too. It also runs `rampin` first.
+
+Example run of `bench.py` on an already cached (hence `rampin` running at RAM
+speed) big file (with two different `sha1sum.exe` files):
+```
+$ python bench.py /f/isos/CentOS-7-x86_64-Everything-1804.iso
+F:/isos/CentOS-7-x86_64-Everything-1804.iso is 8.752 GiB
+All hashes match: 4eead850afed0fc7d170c23bfabfed379419db79 *F:/isos/CentOS-7-x86_64-Everything-1804.iso
+ 2173.866 MiB/s - rampin -0q
+  518.437 MiB/s - openssl sha1
+  424.943 MiB/s - C:/Program Files/Haskell Platform/8.6.5/msys/usr/bin/sha1sum.exe
+  412.867 MiB/s - C:/Program Files/Git/usr/bin/sha1sum.exe
+  362.596 MiB/s - python sha1.py
+  353.374 MiB/s - ./mysha1sum.exe
+  153.435 MiB/s - busybox sha1sum
+```
