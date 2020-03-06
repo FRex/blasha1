@@ -13,6 +13,7 @@ cmds = [
     ['openssl', 'sha1'],
     ['C:/Program Files/Git/usr/bin/sha1sum.exe'],
     ['C:/Program Files/Haskell Platform/8.6.5/msys/usr/bin/sha1sum.exe'],
+    ['C:/Program Files/Git/usr/bin/perl.exe', 'C:/Program Files/Git/usr/bin/core_perl/shasum'],
     ['busybox', 'sha1sum'],
     ['./mysha1sum.exe'],
     ['python', 'sha1.py'],

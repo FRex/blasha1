@@ -11,6 +11,7 @@ cmds=(
     'rampin -0q'
     'openssl sha1'
     'sha1sum'
+    'shasum'
     'busybox sha1sum'
     './mysha1sum.exe'
     'python sha1.py'
