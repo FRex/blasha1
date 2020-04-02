@@ -1,3 +1,4 @@
+#pragma once
 #include <stdint.h>
 
 typedef uint32_t blasha1_u32_t;
