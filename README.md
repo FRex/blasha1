@@ -36,12 +36,12 @@ speed) big file (with two different `sha1sum.exe` files):
 $ python bench.py
 hehe is 1.000 GiB
 All hashes match: c6f8a50e6a3bb11fcc5695039362da3621f7c41b *hehe
- 2377.326 MiB/s - rampin -0q
-  609.069 MiB/s - openssl sha1
-  484.734 MiB/s - ./mysha1sum.exe
-  454.678 MiB/s - C:/Program Files/Haskell Platform/8.6.5/msys/usr/bin/sha1sum.exe
-  426.518 MiB/s - C:/Program Files/Git/usr/bin/sha1sum.exe
-  381.756 MiB/s - C:/Program Files/Git/usr/bin/perl.exe C:/Program Files/Git/usr/bin/core_perl/shasum
-  374.671 MiB/s - python sha1.py
-  175.153 MiB/s - busybox sha1sum
+ 2272.289 MiB/s - rampin -0q
+  566.971 MiB/s - openssl sha1
+  433.833 MiB/s - ./mysha1sum.exe
+  415.529 MiB/s - C:/Program Files/Haskell Platform/8.6.5/msys/usr/bin/sha1sum.exe
+  402.737 MiB/s - C:/Program Files/Git/usr/bin/sha1sum.exe
+  345.876 MiB/s - C:/Program Files/Git/usr/bin/perl.exe C:/Program Files/Git/usr/bin/core_perl/shasum
+  340.953 MiB/s - python sha1.py
+  157.110 MiB/s - busybox sha1sum
 ```
