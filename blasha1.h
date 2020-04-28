@@ -58,10 +58,11 @@ static void blasha1_priv_dochunk(const blasha1_byte_t * chunk, blasha1_u32_t * h
     /* todo: clean up */
 
 #define BLASHA1_PRIV_QCHUNK(i, k, f){\
+    blasha1_u32_t tmp;\
     if(i >= 16)\
     w[i % 16] =\
     blasha1_priv_leftrotate(w[(i - 3) % 16] ^ w[(i - 8) % 16] ^ w[(i - 14) % 16] ^ w[(i - 16) % 16], 1);\
-    const blasha1_u32_t tmp = blasha1_priv_leftrotate(a, 5) + (f) + e + (k) + w[(i % 16)];\
+    tmp = blasha1_priv_leftrotate(a, 5) + (f) + e + (k) + w[(i % 16)];\
     e = d;\
     d = c;\
     c = blasha1_priv_leftrotate(b, 30);\
