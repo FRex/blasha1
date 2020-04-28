@@ -1,5 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
+
+#define BLASHA1_IMPLEMENTATION
 #include "blasha1.h"
 
 #define mybufsize (1 * 1024 * 1024)

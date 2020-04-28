@@ -6,7 +6,7 @@ A portable pure C implementation of SHA1 and (partially) the sha1sum program.
 
 Done for fun, to learn and to comapre to other implementations, look at how the
 compiler optimizes it or not, try optimize some parts out, etc. and to *maybe*
-later turn it into a single-header-file style library and use it in my other
+later use it in my other
 small utils like [FRex/pixelsum](https://github.com/FRex/pixelsum) and others.
 
 In `test.sh` there is a bit of `bash` and `sed` code to run a few different
