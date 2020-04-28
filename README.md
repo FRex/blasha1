@@ -26,17 +26,6 @@ it, plus it has to do extra work of hashing itself).
 `rampin` is my Windows specific CLI utility to ensure files get into and stay
 in disk cache: [FRex/rampin](https://github.com/FRex/rampin).
 
-In `testrun.txt` there's output of running `test.sh`, with interesting results:
-`openssl sha1` is the fastest, `mysha1sum.exe` and `python sha1.py` are on par,
-both taking 50% more time than `openssl sha1`, `sha1sum` is a bit faster than
-them, but takes 25% more time than `openssl sha1`, and `busybox sha1sum` is the
-slowest, and *very* slow, taking 2.25x the time my implementation and Python did.
-
-These results will vary by OS, system, implementation, compilers used, etc. but
-they are still curious, e.g. the fact that a simple C implementation in portable
-pure C with `gcc -O2` can compete with GNU coreutils and OpenSSL binaries and
-not lose by much.
-
 In `bench.py` there is a Python script that does a test similar to one done by
 `test.sh` but prints the sorted hashing speeds (file size divided by time
 taken, so it favors big files where startup) too. It also runs `rampin` first.
@@ -44,14 +33,15 @@ taken, so it favors big files where startup) too. It also runs `rampin` first.
 Example run of `bench.py` on an already cached (hence `rampin` running at RAM
 speed) big file (with two different `sha1sum.exe` files):
 ```
-$ python bench.py /f/isos/CentOS-7-x86_64-Everything-1804.iso
-F:/isos/CentOS-7-x86_64-Everything-1804.iso is 8.752 GiB
-All hashes match: 4eead850afed0fc7d170c23bfabfed379419db79 *F:/isos/CentOS-7-x86_64-Everything-1804.iso
- 2173.866 MiB/s - rampin -0q
-  518.437 MiB/s - openssl sha1
-  424.943 MiB/s - C:/Program Files/Haskell Platform/8.6.5/msys/usr/bin/sha1sum.exe
-  412.867 MiB/s - C:/Program Files/Git/usr/bin/sha1sum.exe
-  362.596 MiB/s - python sha1.py
-  353.374 MiB/s - ./mysha1sum.exe
-  153.435 MiB/s - busybox sha1sum
+$ python bench.py
+hehe is 1.000 GiB
+All hashes match: c6f8a50e6a3bb11fcc5695039362da3621f7c41b *hehe
+ 2377.326 MiB/s - rampin -0q
+  609.069 MiB/s - openssl sha1
+  484.734 MiB/s - ./mysha1sum.exe
+  454.678 MiB/s - C:/Program Files/Haskell Platform/8.6.5/msys/usr/bin/sha1sum.exe
+  426.518 MiB/s - C:/Program Files/Git/usr/bin/sha1sum.exe
+  381.756 MiB/s - C:/Program Files/Git/usr/bin/perl.exe C:/Program Files/Git/usr/bin/core_perl/shasum
+  374.671 MiB/s - python sha1.py
+  175.153 MiB/s - busybox sha1sum
 ```
