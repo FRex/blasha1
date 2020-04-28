@@ -45,3 +45,16 @@ All hashes match: c6f8a50e6a3bb11fcc5695039362da3621f7c41b *hehe
   340.953 MiB/s - python sha1.py
   157.110 MiB/s - busybox sha1sum
 ```
+
+On a VitualBox Linux VM (Fedora 31) where `sha1sum` and Python's `hashlib.sha1`
+both use OpenSSL's `libcrypto.so`:
+```
+[ff@localhost blasha1]$ python bench.py
+hehe is 1.000 GiB
+All hashes match: 74ea8c849d268b58acb47ff4dd6f23b3edc57fdb *hehe
+  643.377 MiB/s - sha1sum
+  588.162 MiB/s - openssl sha1
+  512.747 MiB/s - python sha1.py
+  406.159 MiB/s - ./mysha1sum.exe
+  185.251 MiB/s - busybox sha1sum
+```
