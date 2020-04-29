@@ -19,6 +19,7 @@ cmds = [
     ['C:/Program Files/Git/usr/bin/perl.exe', 'C:/Program Files/Git/usr/bin/core_perl/shasum'],
     ['busybox', 'sha1sum'],
     ['./mysha1sum.exe'],
+    ['./native.exe'],
     ['python', 'sha1.py'],
 ]
 

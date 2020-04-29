@@ -36,14 +36,15 @@ speed) big file (with two different `sha1sum.exe` files):
 $ python bench.py
 hehe is 1.000 GiB
 All hashes match: c6f8a50e6a3bb11fcc5695039362da3621f7c41b *hehe
- 2272.289 MiB/s - rampin -0q
-  566.971 MiB/s - openssl sha1
-  433.833 MiB/s - ./mysha1sum.exe
-  415.529 MiB/s - C:/Program Files/Haskell Platform/8.6.5/msys/usr/bin/sha1sum.exe
-  402.737 MiB/s - C:/Program Files/Git/usr/bin/sha1sum.exe
-  345.876 MiB/s - C:/Program Files/Git/usr/bin/perl.exe C:/Program Files/Git/usr/bin/core_perl/shasum
-  340.953 MiB/s - python sha1.py
-  157.110 MiB/s - busybox sha1sum
+ 2406.069 MiB/s - rampin -0q
+  600.912 MiB/s - openssl sha1
+  511.919 MiB/s - ./native.exe
+  472.199 MiB/s - ./mysha1sum.exe
+  434.433 MiB/s - C:/Program Files/Haskell Platform/8.6.5/msys/usr/bin/sha1sum.exe
+  431.084 MiB/s - C:/Program Files/Git/usr/bin/sha1sum.exe
+  363.862 MiB/s - C:/Program Files/Git/usr/bin/perl.exe C:/Program Files/Git/usr/bin/core_perl/shasum
+  360.976 MiB/s - python sha1.py
+  169.359 MiB/s - busybox sha1sum
 ```
 
 On a VitualBox Linux VM (Fedora 31) where `sha1sum` and Python's `hashlib.sha1`
@@ -51,10 +52,11 @@ both use OpenSSL's `libcrypto.so`:
 ```
 [ff@localhost blasha1]$ python bench.py
 hehe is 1.000 GiB
-All hashes match: 74ea8c849d268b58acb47ff4dd6f23b3edc57fdb *hehe
-  643.377 MiB/s - sha1sum
-  588.162 MiB/s - openssl sha1
-  512.747 MiB/s - python sha1.py
-  406.159 MiB/s - ./mysha1sum.exe
-  185.251 MiB/s - busybox sha1sum
+All hashes match: 65b448bb43478646c0072b62e420b2cc8b46e014 *hehe
+  699.686 MiB/s - sha1sum
+  649.414 MiB/s - openssl sha1
+  544.726 MiB/s - python sha1.py
+  453.495 MiB/s - ./native.exe
+  429.585 MiB/s - ./mysha1sum.exe
+  201.637 MiB/s - busybox sha1sum
 ```
