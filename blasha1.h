@@ -1,10 +1,8 @@
 #ifndef BLASHA1_H
 #define BLASHA1_H
 
-#include <stdint.h>
-
-typedef uint32_t blasha1_u32_t;
-typedef uint64_t blasha1_u64_t;
+typedef unsigned blasha1_u32_t;
+typedef unsigned long long blasha1_u64_t;
 typedef unsigned char blasha1_byte_t;
 
 void blasha1_binary(const void * data, blasha1_u64_t datalen, blasha1_byte_t * digest20);
@@ -25,7 +23,11 @@ void blasha1_get_text(const blasha1_t * c, char * digest41);
 
 #ifdef BLASHA1_IMPLEMENTATION
 
-#include <string.h>
+/* let's check that our 2 fixed width types are right sizes... */
+#define BLASHA1_PRIV_STATIC_ASSERT(msg, expr) typedef int BLASHA1_PRIV_STATIC_ASSERT_##msg[(expr) * 2 - 1];
+BLASHA1_PRIV_STATIC_ASSERT(uint32_is_4_bytes, sizeof(blasha1_u32_t) == 4);
+BLASHA1_PRIV_STATIC_ASSERT(uint64_is_8_bytes, sizeof(blasha1_u64_t) == 8);
+#undef BLASHA1_PRIV_STATIC_ASSERT
 
 static blasha1_u32_t blasha1_priv_bigU32(const blasha1_byte_t * bytes)
 {
@@ -190,7 +192,9 @@ void blasha1_binary(const void * data, blasha1_u64_t datalen, blasha1_byte_t * d
         ptrlen -= 64;
     }
 
-    memset(tmp, 0x0, 2 * 64);
+    for(i = 0; i < 2 * 64; ++i)
+        tmp[i] = 0x0;
+
     for(i = 0; i < (int)ptrlen; ++i)
         tmp[i] = ptr[i];
 
@@ -307,7 +311,9 @@ void blasha1_get_binary(const blasha1_t * c, blasha1_byte_t * digest20)
     blasha1_byte_t tmp[2 * 64];
     int lastchunklen, i;
 
-    memset(tmp, 0x0, 2 * 64);
+    for(i = 0; i < 2 * 64; ++i)
+        tmp[i] = 0x0;
+
     lastchunklen = (int)(c->size % 64);
     for(i = 0; i < lastchunklen; ++i)
         tmp[i] = c->data[i];
