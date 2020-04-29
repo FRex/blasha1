@@ -1,26 +1,47 @@
 #ifndef BLASHA1_H
 #define BLASHA1_H
 
+/* include this header in any file you need these sha1 apis in, but also make
+ * sure to include it in at least one .c or .cpp/.cc/.cxx file, after defining
+ * BLASHA1_IMPLEMENTATION, to put the implementation in that one file, both the
+ * header and implementation parts should work as any C or C++ version, so if
+ * you mix C and C++ and use this lib in both you'll need own extern "C" */
+
+
+/* fixed size unsigned types needed (the only problematic one is uint64): */
 typedef unsigned blasha1_u32_t;
 typedef unsigned long long blasha1_u64_t;
 typedef unsigned char blasha1_byte_t;
 
+
+/* one call (ptr, len) -> hash apis (the text one includes nul terminator): */
 void blasha1_binary(const void * data, blasha1_u64_t datalen, blasha1_byte_t * digest20);
 void blasha1_text(const void * data, blasha1_u64_t datalen, char * digest41);
 
+
+/* incremental apis: */
+
+/* sha1 state, safe to memcpy, move, etc. e.g. when hashing buffers with same prefix */
 typedef struct blasha1 {
     blasha1_u64_t size;
     blasha1_byte_t data[64];
     blasha1_u32_t h[5];
 } blasha1_t;
 
+/* initialize the sha1 state (this is not just a memset to 0, so it must be called) */
 void blasha1_init(blasha1_t * c);
+
+/* feed data into the state, which changes it */
 void blasha1_update(blasha1_t * c, const void * data, blasha1_u64_t datalen);
+
+/* get digest of hashing so far, text version includes nul term */
 void blasha1_get_binary(const blasha1_t * c, blasha1_byte_t * digest20);
 void blasha1_get_text(const blasha1_t * c, char * digest41);
 
 #endif /* BLASHA1_H */
 
+
+/* implementation part (define BLASHA1_IMPLEMENTATION in one source file only) */
 #ifdef BLASHA1_IMPLEMENTATION
 
 /* let's check that our 2 fixed width types are right sizes... */
