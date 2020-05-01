@@ -4,9 +4,8 @@
 #define BLASHA1_IMPLEMENTATION
 #include "blasha1.h"
 
-const char kTestData[] = "test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test";
+const char * kTestData = "test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test";
 
-const int kTestLen = sizeof(kTestData);
 const char * kTestSha1 = "f9730d2e153614e2ba058c21e59285f44d8ac109";
 const char * kEmptySha1 = "da39a3ee5e6b4b0d3255bfef95601890afd80709";
 
@@ -77,8 +76,32 @@ static void checkEmpty(void)
         printf("OK, no errors in checkEmpty\n");
 }
 
+static void checkTestOneCall(void)
+{
+    int i, errors;
+    char text[41];
+
+    errors = 0;
+
+    for(i = 0; i < 1234; ++i)
+    {
+        blasha1_text(kTestData, strlen(kTestData), text);
+        if(0 != strcmp(kTestSha1, text))
+        {
+            ++errors;
+            printf("wrong hash for test data from one call api: %s\n", text);
+        }
+    }
+
+    if(errors)
+        printf("ERRORS in checkTestOneCall, %d total\n", errors);
+    else
+        printf("OK, no errors in checkTestOneCall\n");
+}
+
 int main(void)
 {
     checkEmpty();
+    checkTestOneCall();
     return 0;
 }
