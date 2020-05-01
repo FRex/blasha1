@@ -222,6 +222,7 @@ void blasha1_binary(const void * data, blasha1_u64_t datalen, blasha1_byte_t * d
     tmp[ptrlen] = 0x80u;
     if(ptrlen < 56)
     {
+        blasha1_priv_writeBigU64(tmp + 56, datalen * 8);
         blasha1_priv_dochunk(tmp, h);
     }
     else
