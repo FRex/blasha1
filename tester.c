@@ -99,9 +99,59 @@ static void checkTestOneCall(void)
         printf("OK, no errors in checkTestOneCall\n");
 }
 
+static void checkTestIncremental(int amount)
+{
+    int i, errors;
+    char text[41];
+    blasha1_t sha1;
+    size_t j, datalen;
+
+    errors = 0;
+    datalen = strlen(kTestData);
+
+    for(i = 0; i < 1234; ++i)
+    {
+        trashMemory(&sha1, sizeof(blasha1_t), i);
+        blasha1_init(&sha1);
+
+        for(j = 0u; j < datalen; j += amount)
+        {
+            if((datalen - j) < (unsigned)amount)
+                blasha1_update(&sha1, kTestData + j, datalen - j);
+            else
+                blasha1_update(&sha1, kTestData + j, amount);
+        }
+
+        blasha1_get_text(&sha1, text);
+        if(0 != strcmp(kTestSha1, text))
+        {
+            ++errors;
+            printf("wrong hash for test data after feeding byte by byte: %s\n", text);
+        }
+
+    }
+
+    if(errors)
+        printf("ERRORS in checkTestIncremental(%d), %d total\n", amount, errors);
+    else
+        printf("OK, no errors in checkTestIncremental(%d)\n", amount);
+}
+
+const int kPrimes[] = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83};
+const int kPrimeCount = sizeof(kPrimes) / sizeof(kPrimes[0]);
+
 int main(void)
 {
+    int i;
+
     checkEmpty();
     checkTestOneCall();
+    checkTestIncremental(1);
+    checkTestIncremental(strlen(kTestData));
+    checkTestIncremental(strlen(kTestData) - 1);
+
+    for(i = 0; i < kPrimeCount; ++i)
+        checkTestIncremental(kPrimes[i]);
+
     return 0;
 }
