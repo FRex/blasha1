@@ -30,6 +30,8 @@ In `bench.py` there is a Python script that does a test similar to one done by
 `test.sh` but prints the sorted hashing speeds (file size divided by time
 taken, so it favors big files where startup) too. It also runs `rampin` first.
 
+File `tester.c` is a program that tests various edge cases and block sizes.
+
 Example run of `bench.py` on an already cached (hence `rampin` running at RAM
 speed) big file (with two different `sha1sum.exe` files):
 ```
