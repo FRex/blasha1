@@ -203,8 +203,13 @@ void blasha1_binary(const void * data, blasha1_u64_t datalen, blasha1_byte_t * d
     blasha1_u32_t h[5] = { 0x67452301u, 0xefcdab89u, 0x98badcfeu, 0x10325476u, 0xc3d2e1F0u };
     blasha1_byte_t tmp[2 * 64];
     const blasha1_byte_t * ptr = (const blasha1_byte_t*)data;
-    blasha1_u64_t ptrlen = datalen;
+    blasha1_u64_t ptrlen;
     int i;
+
+    if(data == NULL)
+        datalen = 0u;
+
+    ptrlen = datalen;
 
     while(ptrlen >= 64)
     {
