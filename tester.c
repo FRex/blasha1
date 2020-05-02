@@ -1,5 +1,7 @@
 #include <string.h>
+#include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
 
 #define BLASHA1_IMPLEMENTATION
 #include "blasha1.h"
@@ -126,9 +128,8 @@ static void checkTestIncremental(int amount)
         if(0 != strcmp(kTestSha1, text))
         {
             ++errors;
-            printf("wrong hash for test data after feeding byte by byte: %s\n", text);
+            printf("wrong hash for test data after feeding fixed %d chunks: %s\n", amount, text);
         }
-
     }
 
     if(errors)
@@ -137,12 +138,57 @@ static void checkTestIncremental(int amount)
         printf("OK, no errors in checkTestIncremental(%d)\n", amount);
 }
 
+static void checkRandomMixedSizes(void)
+{
+    int i, errors;
+    char text[41];
+    blasha1_t sha1;
+    size_t j, datalen;
+
+    errors = 0;
+    datalen = strlen(kTestData);
+
+    for(i = 0; i < 1234; ++i)
+    {
+        trashMemory(&sha1, sizeof(blasha1_t), i);
+        blasha1_init(&sha1);
+
+        for(j = 0u; j < datalen;)
+        {
+            const int amount = rand() % 130;
+            if((datalen - j) < (unsigned)amount)
+                blasha1_update(&sha1, kTestData + j, datalen - j);
+            else
+                blasha1_update(&sha1, kTestData + j, amount);
+
+            j += amount;
+        }
+
+        blasha1_get_text(&sha1, text);
+        if(0 != strcmp(kTestSha1, text))
+        {
+            ++errors;
+            printf("wrong hash for test data after random mixed sizes: %s\n", text);
+        }
+    }
+
+    if(errors)
+        printf("ERRORS in checkRandomMixedSizes, %d total\n", errors);
+    else
+        printf("OK, no errors in checkRandomMixedSizes\n");
+}
+
 const int kPrimes[] = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83};
 const int kPrimeCount = sizeof(kPrimes) / sizeof(kPrimes[0]);
 
 int main(void)
 {
+    unsigned seed;
     int i;
+
+    seed = (unsigned)time(NULL);
+    srand(seed);
+    printf("seed = %u\n", seed);
 
     checkEmpty();
     checkTestOneCall();
@@ -153,5 +199,6 @@ int main(void)
     for(i = 0; i < kPrimeCount; ++i)
         checkTestIncremental(kPrimes[i]);
 
+    checkRandomMixedSizes();
     return 0;
 }
