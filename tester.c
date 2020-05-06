@@ -78,7 +78,7 @@ static void checkEmpty(void)
         printf("OK, no errors in checkEmpty\n");
 }
 
-static void checkTestOneCall(void)
+static void checkOneCall(const void * data, size_t len, const char * text41)
 {
     int i, errors;
     char text[41];
@@ -87,8 +87,8 @@ static void checkTestOneCall(void)
 
     for(i = 0; i < 1234; ++i)
     {
-        blasha1_text(kTestData, strlen(kTestData), text);
-        if(0 != strcmp(kTestSha1, text))
+        blasha1_text(data, len, text);
+        if(0 != strcmp(text41, text))
         {
             ++errors;
             printf("wrong hash for test data from one call api: %s\n", text);
@@ -96,36 +96,36 @@ static void checkTestOneCall(void)
     }
 
     if(errors)
-        printf("ERRORS in checkTestOneCall, %d total\n", errors);
+        printf("ERRORS in checkOneCall, %d total\n", errors);
     else
-        printf("OK, no errors in checkTestOneCall\n");
+        printf("OK, no errors in checkOneCall\n");
 }
 
-static void checkTestIncremental(int amount)
+static void checkIncremental(int amount, const void * data, size_t len, const char * text41)
 {
     int i, errors;
     char text[41];
     blasha1_t sha1;
-    size_t j, datalen;
+    size_t j;
+    const unsigned char * cdata = (const unsigned char*)data;
 
     errors = 0;
-    datalen = strlen(kTestData);
 
     for(i = 0; i < 1234; ++i)
     {
         trashMemory(&sha1, sizeof(blasha1_t), i);
         blasha1_init(&sha1);
 
-        for(j = 0u; j < datalen; j += amount)
+        for(j = 0u; j < len; j += amount)
         {
-            if((datalen - j) < (unsigned)amount)
-                blasha1_update(&sha1, kTestData + j, datalen - j);
+            if((len - j) < (unsigned)amount)
+                blasha1_update(&sha1, cdata + j, len - j);
             else
-                blasha1_update(&sha1, kTestData + j, amount);
+                blasha1_update(&sha1, cdata + j, amount);
         }
 
         blasha1_get_text(&sha1, text);
-        if(0 != strcmp(kTestSha1, text))
+        if(0 != strcmp(text41, text))
         {
             ++errors;
             printf("wrong hash for test data after feeding fixed %d chunks: %s\n", amount, text);
@@ -133,39 +133,39 @@ static void checkTestIncremental(int amount)
     }
 
     if(errors)
-        printf("ERRORS in checkTestIncremental(%d), %d total\n", amount, errors);
+        printf("ERRORS in checkIncremental(%d), %d total\n", amount, errors);
     else
-        printf("OK, no errors in checkTestIncremental(%d)\n", amount);
+        printf("OK, no errors in checkIncremental(%d)\n", amount);
 }
 
-static void checkRandomMixedSizes(void)
+static void checkRandomMixedSizes(const void * data, size_t len, const char * text41)
 {
     int i, errors;
     char text[41];
     blasha1_t sha1;
-    size_t j, datalen;
+    size_t j;
+    const unsigned char * cdata = (const unsigned char*)data;
 
     errors = 0;
-    datalen = strlen(kTestData);
 
     for(i = 0; i < 1234; ++i)
     {
         trashMemory(&sha1, sizeof(blasha1_t), i);
         blasha1_init(&sha1);
 
-        for(j = 0u; j < datalen;)
+        for(j = 0u; j < len;)
         {
             const int amount = rand() % 130;
-            if((datalen - j) < (unsigned)amount)
-                blasha1_update(&sha1, kTestData + j, datalen - j);
+            if((len - j) < (unsigned)amount)
+                blasha1_update(&sha1, cdata + j, len - j);
             else
-                blasha1_update(&sha1, kTestData + j, amount);
+                blasha1_update(&sha1, cdata + j, amount);
 
             j += amount;
         }
 
         blasha1_get_text(&sha1, text);
-        if(0 != strcmp(kTestSha1, text))
+        if(0 != strcmp(text41, text))
         {
             ++errors;
             printf("wrong hash for test data after random mixed sizes: %s\n", text);
@@ -181,24 +181,32 @@ static void checkRandomMixedSizes(void)
 const int kPrimes[] = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83};
 const int kPrimeCount = sizeof(kPrimes) / sizeof(kPrimes[0]);
 
+static void checkData(const void * data, size_t len, const char * text41)
+{
+    int i;
+
+    checkOneCall(data, len, text41);
+    checkIncremental(1, data, len, text41);
+    checkIncremental(len, data, len, text41);
+
+    if(len > 1)
+        checkIncremental(len - 1, data, len, text41);
+
+    for(i = 0; i < kPrimeCount; ++i)
+        checkIncremental(kPrimes[i], data, len, text41);
+
+    checkRandomMixedSizes(data, len, text41);
+}
+
 int main(void)
 {
     unsigned seed;
-    int i;
 
     seed = (unsigned)time(NULL);
     srand(seed);
     printf("seed = %u\n", seed);
 
     checkEmpty();
-    checkTestOneCall();
-    checkTestIncremental(1);
-    checkTestIncremental(strlen(kTestData));
-    checkTestIncremental(strlen(kTestData) - 1);
-
-    for(i = 0; i < kPrimeCount; ++i)
-        checkTestIncremental(kPrimes[i]);
-
-    checkRandomMixedSizes();
+    checkData(kTestData, strlen(kTestData), kTestSha1);
     return 0;
 }
