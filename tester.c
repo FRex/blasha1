@@ -11,6 +11,8 @@ const char * kTestData = "test test test test test test test test test test test
 const char * kTestSha1 = "f9730d2e153614e2ba058c21e59285f44d8ac109";
 const char * kEmptySha1 = "da39a3ee5e6b4b0d3255bfef95601890afd80709";
 
+const char * kSha1OfLowercaseX = "11f6ad8ec52a2984abaafd7c3b516503785c2072";
+
 static void trashMemory(void * ptr, int size, int extra)
 {
     while(size > 0)
@@ -193,6 +195,7 @@ static void checkData(const char * name, const void * data, size_t len, const ch
 int main(void)
 {
     unsigned seed;
+    char c = 'x';
 
     seed = (unsigned)time(NULL);
     srand(seed);
@@ -200,5 +203,6 @@ int main(void)
 
     checkEmpty();
     checkData("kTestData", kTestData, strlen(kTestData), kTestSha1);
+    checkData("oneLowercaseX", &c, 1, kSha1OfLowercaseX);
     return 0;
 }
