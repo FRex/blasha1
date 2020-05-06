@@ -72,13 +72,10 @@ static void checkEmpty(void)
         }
     } /* for */
 
-    if(errors)
-        printf("ERRORS in checkEmpty, %d total\n", errors);
-    else
-        printf("OK, no errors in checkEmpty\n");
+    printf("Errors in checkEmpty: %d\n", errors);
 }
 
-static void checkOneCall(const void * data, size_t len, const char * goodtext41)
+static int checkOneCall(const void * data, size_t len, const char * goodtext41)
 {
     int i, errors;
     char text[41];
@@ -95,13 +92,10 @@ static void checkOneCall(const void * data, size_t len, const char * goodtext41)
         }
     }
 
-    if(errors)
-        printf("ERRORS in checkOneCall, %d total\n", errors);
-    else
-        printf("OK, no errors in checkOneCall\n");
+    return errors;
 }
 
-static void checkIncremental(int amount, const void * data, size_t len, const char * goodtext41)
+static int checkIncremental(int amount, const void * data, size_t len, const char * goodtext41)
 {
     int i, errors;
     char text[41];
@@ -132,13 +126,10 @@ static void checkIncremental(int amount, const void * data, size_t len, const ch
         }
     }
 
-    if(errors)
-        printf("ERRORS in checkIncremental(%d), %d total\n", amount, errors);
-    else
-        printf("OK, no errors in checkIncremental(%d)\n", amount);
+    return errors;
 }
 
-static void checkRandomMixedSizes(const void * data, size_t len, const char * goodtext41)
+static int checkRandomMixedSizes(const void * data, size_t len, const char * goodtext41)
 {
     int i, errors;
     char text[41];
@@ -172,30 +163,31 @@ static void checkRandomMixedSizes(const void * data, size_t len, const char * go
         }
     }
 
-    if(errors)
-        printf("ERRORS in checkRandomMixedSizes, %d total\n", errors);
-    else
-        printf("OK, no errors in checkRandomMixedSizes\n");
+    return errors;
 }
 
 const int kPrimes[] = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83};
 const int kPrimeCount = sizeof(kPrimes) / sizeof(kPrimes[0]);
 
-static void checkData(const void * data, size_t len, const char * goodtext41)
+static void checkData(const char * name, const void * data, size_t len, const char * goodtext41)
 {
-    int i;
+    int i, errtotal;
 
-    checkOneCall(data, len, goodtext41);
-    checkIncremental(1, data, len, goodtext41);
-    checkIncremental(len, data, len, goodtext41);
+    errtotal = 0;
+
+    errtotal += checkOneCall(data, len, goodtext41);
+    errtotal += checkIncremental(1, data, len, goodtext41);
+    errtotal += checkIncremental(len, data, len, goodtext41);
 
     if(len > 1)
-        checkIncremental(len - 1, data, len, goodtext41);
+        errtotal += checkIncremental(len - 1, data, len, goodtext41);
 
     for(i = 0; i < kPrimeCount; ++i)
-        checkIncremental(kPrimes[i], data, len, goodtext41);
+        errtotal += checkIncremental(kPrimes[i], data, len, goodtext41);
 
-    checkRandomMixedSizes(data, len, goodtext41);
+    errtotal += checkRandomMixedSizes(data, len, goodtext41);
+
+    printf("Errors in %s: %d\n", name, errtotal);
 }
 
 int main(void)
@@ -207,6 +199,6 @@ int main(void)
     printf("seed = %u\n", seed);
 
     checkEmpty();
-    checkData(kTestData, strlen(kTestData), kTestSha1);
+    checkData("kTestData", kTestData, strlen(kTestData), kTestSha1);
     return 0;
 }
