@@ -78,7 +78,7 @@ static void checkEmpty(void)
         printf("OK, no errors in checkEmpty\n");
 }
 
-static void checkOneCall(const void * data, size_t len, const char * text41)
+static void checkOneCall(const void * data, size_t len, const char * goodtext41)
 {
     int i, errors;
     char text[41];
@@ -88,7 +88,7 @@ static void checkOneCall(const void * data, size_t len, const char * text41)
     for(i = 0; i < 1234; ++i)
     {
         blasha1_text(data, len, text);
-        if(0 != strcmp(text41, text))
+        if(0 != strcmp(goodtext41, text))
         {
             ++errors;
             printf("wrong hash for test data from one call api: %s\n", text);
@@ -101,7 +101,7 @@ static void checkOneCall(const void * data, size_t len, const char * text41)
         printf("OK, no errors in checkOneCall\n");
 }
 
-static void checkIncremental(int amount, const void * data, size_t len, const char * text41)
+static void checkIncremental(int amount, const void * data, size_t len, const char * goodtext41)
 {
     int i, errors;
     char text[41];
@@ -125,7 +125,7 @@ static void checkIncremental(int amount, const void * data, size_t len, const ch
         }
 
         blasha1_get_text(&sha1, text);
-        if(0 != strcmp(text41, text))
+        if(0 != strcmp(goodtext41, text))
         {
             ++errors;
             printf("wrong hash for test data after feeding fixed %d chunks: %s\n", amount, text);
@@ -138,7 +138,7 @@ static void checkIncremental(int amount, const void * data, size_t len, const ch
         printf("OK, no errors in checkIncremental(%d)\n", amount);
 }
 
-static void checkRandomMixedSizes(const void * data, size_t len, const char * text41)
+static void checkRandomMixedSizes(const void * data, size_t len, const char * goodtext41)
 {
     int i, errors;
     char text[41];
@@ -165,7 +165,7 @@ static void checkRandomMixedSizes(const void * data, size_t len, const char * te
         }
 
         blasha1_get_text(&sha1, text);
-        if(0 != strcmp(text41, text))
+        if(0 != strcmp(goodtext41, text))
         {
             ++errors;
             printf("wrong hash for test data after random mixed sizes: %s\n", text);
@@ -181,21 +181,21 @@ static void checkRandomMixedSizes(const void * data, size_t len, const char * te
 const int kPrimes[] = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83};
 const int kPrimeCount = sizeof(kPrimes) / sizeof(kPrimes[0]);
 
-static void checkData(const void * data, size_t len, const char * text41)
+static void checkData(const void * data, size_t len, const char * goodtext41)
 {
     int i;
 
-    checkOneCall(data, len, text41);
-    checkIncremental(1, data, len, text41);
-    checkIncremental(len, data, len, text41);
+    checkOneCall(data, len, goodtext41);
+    checkIncremental(1, data, len, goodtext41);
+    checkIncremental(len, data, len, goodtext41);
 
     if(len > 1)
-        checkIncremental(len - 1, data, len, text41);
+        checkIncremental(len - 1, data, len, goodtext41);
 
     for(i = 0; i < kPrimeCount; ++i)
-        checkIncremental(kPrimes[i], data, len, text41);
+        checkIncremental(kPrimes[i], data, len, goodtext41);
 
-    checkRandomMixedSizes(data, len, text41);
+    checkRandomMixedSizes(data, len, goodtext41);
 }
 
 int main(void)
