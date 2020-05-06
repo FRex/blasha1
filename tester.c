@@ -6,6 +6,8 @@
 #define BLASHA1_IMPLEMENTATION
 #include "blasha1.h"
 
+#define REPETITIONS 1
+
 const char * kTestData = "test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test";
 
 const char * kTestSha1 = "f9730d2e153614e2ba058c21e59285f44d8ac109";
@@ -30,7 +32,7 @@ static void checkEmpty(void)
 
     errors = 0;
 
-    for(i = 0; i < 1234; ++i)
+    for(i = 0; i < REPETITIONS; ++i)
     {
         trashMemory(&sha1, sizeof(blasha1_t), i);
 
@@ -39,7 +41,7 @@ static void checkEmpty(void)
         if(0 != strcmp(kEmptySha1, text))
         {
             ++errors;
-            printf("wrong empty sha1 after init: %s\n", text);
+            printf("wrong empty sha1 after init: %s (wanted %s)\n", text, kEmptySha1);
         }
 
         blasha1_update(&sha1, NULL, 123);
@@ -84,13 +86,13 @@ static int checkOneCall(const void * data, size_t len, const char * goodtext41)
 
     errors = 0;
 
-    for(i = 0; i < 1234; ++i)
+    for(i = 0; i < REPETITIONS; ++i)
     {
         blasha1_text(data, len, text);
         if(0 != strcmp(goodtext41, text))
         {
             ++errors;
-            printf("wrong hash for test data from one call api: %s\n", text);
+            printf("wrong hash for test data from one call api: %s (wanted %s)\n", text, goodtext41);
         }
     }
 
@@ -107,7 +109,7 @@ static int checkIncremental(int amount, const void * data, size_t len, const cha
 
     errors = 0;
 
-    for(i = 0; i < 1234; ++i)
+    for(i = 0; i < REPETITIONS; ++i)
     {
         trashMemory(&sha1, sizeof(blasha1_t), i);
         blasha1_init(&sha1);
@@ -124,7 +126,8 @@ static int checkIncremental(int amount, const void * data, size_t len, const cha
         if(0 != strcmp(goodtext41, text))
         {
             ++errors;
-            printf("wrong hash for test data after feeding fixed %d chunks: %s\n", amount, text);
+            printf("wrong hash for test data after feeding fixed %d chunks: %s (wanted %s)\n",
+                amount, text, goodtext41);
         }
     }
 
@@ -141,7 +144,7 @@ static int checkRandomMixedSizes(const void * data, size_t len, const char * goo
 
     errors = 0;
 
-    for(i = 0; i < 1234; ++i)
+    for(i = 0; i < REPETITIONS; ++i)
     {
         trashMemory(&sha1, sizeof(blasha1_t), i);
         blasha1_init(&sha1);
@@ -161,7 +164,8 @@ static int checkRandomMixedSizes(const void * data, size_t len, const char * goo
         if(0 != strcmp(goodtext41, text))
         {
             ++errors;
-            printf("wrong hash for test data after random mixed sizes: %s\n", text);
+            printf("wrong hash for test data after random mixed sizes: %s (wanted %s)\n",
+                text, goodtext41);
         }
     }
 
@@ -192,8 +196,152 @@ static void checkData(const char * name, const void * data, size_t len, const ch
     printf("Errors in %s: %d\n", name, errtotal);
 }
 
-int main(void)
+static void * reallocOrFree(void * ptr, size_t newsize)
 {
+    void * ret = realloc(ptr, newsize);
+    if(!ret)
+        free(ptr);
+
+    return ret;
+}
+
+static void * loadFile(FILE * f, size_t * outfsize)
+{
+    size_t bufsize = 0u;
+    size_t sofar = 0u;
+    void * ret = NULL;
+
+    if(!f)
+        return NULL;
+
+    while(1)
+    {
+        if(bufsize - sofar == 0)
+        {
+            bufsize = bufsize + bufsize / 2 + 20;
+            ret = reallocOrFree(ret, bufsize);
+            if(!ret)
+                return NULL;
+        }
+
+        size_t readc = fread(((char*)ret) + sofar, 1, bufsize - sofar, f);
+        sofar += readc;
+        if((readc == 0) && feof(f))
+            break;
+    } /* while 1 */
+
+    /* ret = attemptShrink(ret, sofar); */
+    /* ret = forceShrink(ret, sofar); */
+
+    *outfsize = sofar;
+    return ret;
+}
+
+static void * openAndLoadFile(const char * fname, size_t * outfsize)
+{
+    void * ret;
+    FILE * f = fopen(fname, "rb");
+
+    if(!f)
+    {
+        printf("failed to open %s\n", fname);
+        return NULL;
+    }
+
+    ret = loadFile(f, outfsize);
+    fclose(f);
+    return ret;
+}
+
+#define MYMAXLINE 200
+
+static int isHexDigit(char c)
+{
+    return ('0' <= c && c <= '9') || ('a' <= c && c <= 'f');
+}
+
+static int checkAndAdjustLine(char * line)
+{
+    int i;
+
+    /* even empty line that isn't last has 1 \n in it so this is eof? */
+    if(strlen(line) == 0)
+        return 0;
+
+    if(strlen(line) == MYMAXLINE)
+    {
+        printf("line was too long\n");
+        return 0;
+    }
+
+    for(i = 0; i < 40; ++i)
+    {
+        if(!isHexDigit(line[i]))
+        {
+            printf("char %d is not hex digit\n", i);
+            return 0;
+        }
+    }
+
+    /* remove both linux \n and windows \r\n line endings: */
+    if(strchr(line, '\n'))
+        *strchr(line, '\n') = '\0';
+
+    if(strchr(line, '\r'))
+        *strchr(line, '\r') = '\0';
+
+    return 1;
+}
+
+static void doitOnFile(FILE * f)
+{
+    const char * fname;
+    char line[MYMAXLINE + 1];
+    void * ptr;
+    size_t len;
+
+    while(1)
+    {
+        line[0] = '\0';
+        fgets(line, MYMAXLINE + 1, f);
+
+        if(!checkAndAdjustLine(line))
+            break;
+
+        fname = strstr(line, " *") + 2;
+        *strstr(line, " *") = '\0';
+
+        ptr = openAndLoadFile(fname, &len);
+        if(ptr)
+            checkData(fname, ptr, len, line);
+
+        free(ptr);
+    }
+}
+
+static void doit(const char * fname)
+{
+    /* special case, - = stdin and don't close it either? */
+    if(0 == strcmp(fname, "-"))
+    {
+        doitOnFile(stdin);
+        return;
+    }
+
+    FILE * f = fopen(fname, "rb");
+    if(!f)
+    {
+        printf("failed to open %s\n", fname);
+        return;
+    }
+
+    doitOnFile(f);
+    fclose(f);
+}
+
+int main(int argc, char ** argv)
+{
+    int i;
     unsigned seed;
     char c = 'x';
 
@@ -204,5 +352,9 @@ int main(void)
     checkEmpty();
     checkData("kTestData", kTestData, strlen(kTestData), kTestSha1);
     checkData("oneLowercaseX", &c, 1, kSha1OfLowercaseX);
+
+    for(i = 1; i < argc; ++i)
+        doit(argv[i]);
+
     return 0;
 }
