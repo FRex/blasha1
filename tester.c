@@ -283,6 +283,19 @@ static int checkAndAdjustLine(char * line)
         }
     }
 
+    /* space + asterisk or 2 spaces separate sha1 from filename: */
+    if(line[40] != ' ')
+    {
+        printf("char 40 is not space\n");
+        return 0;
+    }
+
+    if(line[41] != ' ' && line[41] != '*')
+    {
+        printf("char 40 is not space or asterisk\n");
+        return 0;
+    }
+
     /* remove both linux \n and windows \r\n line endings: */
     if(strchr(line, '\n'))
         *strchr(line, '\n') = '\0';
@@ -308,8 +321,17 @@ static void doitOnFile(FILE * f)
         if(!checkAndAdjustLine(line))
             break;
 
-        fname = strstr(line, " *") + 2;
-        *strstr(line, " *") = '\0';
+        /* if checkAndAdjustLine returned true then we have either space + asterisk or two spaces */
+        if(strstr(line, " *"))
+        {
+            fname = strstr(line, " *") + 2;
+            *strstr(line, " *") = '\0';
+        }
+        else
+        {
+            fname = strstr(line, "  ") + 2;
+            *strstr(line, "  ") = '\0';
+        }
 
         ptr = openAndLoadFile(fname, &len);
         if(ptr)
