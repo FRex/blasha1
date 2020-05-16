@@ -200,45 +200,21 @@ static void blasha1_priv_writeBigU32(blasha1_byte_t * ptr, blasha1_u32_t value)
 
 void blasha1_binary(const void * data, blasha1_u64_t datalen, blasha1_byte_t * digest20)
 {
-    blasha1_u32_t h[5] = { 0x67452301u, 0xefcdab89u, 0x98badcfeu, 0x10325476u, 0xc3d2e1F0u };
-    blasha1_byte_t tmp[2 * 64];
-    const blasha1_byte_t * ptr = (const blasha1_byte_t*)data;
-    blasha1_u64_t ptrlen;
-    int i;
+    blasha1_t state;
 
-    if(data == NULL)
-        datalen = 0u;
+    blasha1_init(&state);
 
-    ptrlen = datalen;
-
-    while(ptrlen >= 64)
+#define BLASHA1_PRIV_CHUNKSIZE (64 * 1024)
+    while(datalen >= BLASHA1_PRIV_CHUNKSIZE)
     {
-        blasha1_priv_dochunk(ptr, h);
-        ptr += 64;
-        ptrlen -= 64;
-    }
+        blasha1_update(&state, data, BLASHA1_PRIV_CHUNKSIZE);
+        datalen -= BLASHA1_PRIV_CHUNKSIZE;
+        data = ((const unsigned char*)data) + BLASHA1_PRIV_CHUNKSIZE;
+    } /* while */
+#undef BLASHA1_PRIV_CHUNKSIZE
 
-    for(i = 0; i < 2 * 64; ++i)
-        tmp[i] = 0x0;
-
-    for(i = 0; i < (int)ptrlen; ++i)
-        tmp[i] = ptr[i];
-
-    tmp[ptrlen] = 0x80u;
-    if(ptrlen < 56)
-    {
-        blasha1_priv_writeBigU64(tmp + 56, datalen * 8);
-        blasha1_priv_dochunk(tmp, h);
-    }
-    else
-    {
-        blasha1_priv_writeBigU64(tmp + 64 + 56, datalen * 8);
-        blasha1_priv_dochunk(tmp, h);
-        blasha1_priv_dochunk(tmp + 64, h);
-    }
-
-    for(i = 0; i < 5; ++i)
-        blasha1_priv_writeBigU32(digest20 + i * 4, h[i]);
+    blasha1_update(&state, data, datalen);
+    blasha1_get_binary(&state, digest20);
 }
 
 static char blasha1_priv_hexdigit(int val)
