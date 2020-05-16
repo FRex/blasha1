@@ -15,7 +15,8 @@ const char * kEmptySha1 = "da39a3ee5e6b4b0d3255bfef95601890afd80709";
 
 const char * kSha1OfLowercaseX = "11f6ad8ec52a2984abaafd7c3b516503785c2072";
 
-static void trashMemory(void * ptr, int size, int extra)
+/* if extra == 0 then its like memset(ptr, 0x0, size) */
+static void trashMemory(void * ptr, unsigned size, unsigned extra)
 {
     while(size > 0)
     {
@@ -24,7 +25,7 @@ static void trashMemory(void * ptr, int size, int extra)
     }
 }
 
-static void checkEmpty(void)
+static int checkEmpty(void)
 {
     int i, errors;
     char text[41];
@@ -77,6 +78,7 @@ static void checkEmpty(void)
     } /* for */
 
     printf("Errors in checkEmpty: %d\n", errors);
+    return errors;
 }
 
 static int checkOneCall(const void * data, size_t len, const char * goodtext41)
@@ -134,6 +136,51 @@ static int checkIncremental(int amount, const void * data, size_t len, const cha
     return errors;
 }
 
+/* sizes contains sizes to try one after another, and at 0 (to mark end) */
+static int checkInSizes(const int * sizes, const void * data, size_t len, const char * goodtext41)
+{
+    int i, errors, sizesiter;
+    char text[41];
+    blasha1_t sha1;
+    size_t j;
+    const unsigned char * cdata = (const unsigned char*)data;
+
+    errors = 0;
+
+    for(i = 0; i < REPETITIONS; ++i)
+    {
+        trashMemory(&sha1, sizeof(blasha1_t), i);
+        blasha1_init(&sha1);
+        j = 0u;
+        sizesiter = 0;
+
+        while(j < len)
+        {
+            const int amount = sizes[sizesiter];
+            ++sizesiter;
+            if(sizes[sizesiter] == 0)
+                sizesiter = 0;
+
+            if((len - j) < (unsigned)amount)
+                blasha1_update(&sha1, cdata + j, len - j);
+            else
+                blasha1_update(&sha1, cdata + j, amount);
+
+            j += amount;
+        } /* while 1 */
+
+        blasha1_get_text(&sha1, text);
+        if(0 != strcmp(goodtext41, text))
+        {
+            ++errors;
+            printf("wrong hash for test data after feeding cycling sizes: %s (wanted %s)\n",
+                text, goodtext41);
+        }
+    }
+
+    return errors;
+}
+
 static int checkRandomMixedSizes(const void * data, size_t len, const char * goodtext41)
 {
     int i, errors;
@@ -175,15 +222,24 @@ static int checkRandomMixedSizes(const void * data, size_t len, const char * goo
 const int kPrimes[] = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83};
 const int kPrimeCount = sizeof(kPrimes) / sizeof(kPrimes[0]);
 
-static void checkData(const char * name, const void * data, size_t len, const char * goodtext41)
+static int checkData(const char * name, const void * data, size_t len, const char * goodtext41)
 {
     int i, errtotal;
+    const int sizes_1_200[] = {1, 200, 0};
+    const int sizes_1_99[] = {1, 99, 0};
+    const int sizes_1_64[] = {1, 64, 0};
+    const int sizes_1_16[] = {1, 16, 0};
 
     errtotal = 0;
 
     errtotal += checkOneCall(data, len, goodtext41);
     errtotal += checkIncremental(1, data, len, goodtext41);
     errtotal += checkIncremental(len, data, len, goodtext41);
+
+    errtotal += checkInSizes(sizes_1_200, data, len, goodtext41);
+    errtotal += checkInSizes(sizes_1_99, data, len, goodtext41);
+    errtotal += checkInSizes(sizes_1_64, data, len, goodtext41);
+    errtotal += checkInSizes(sizes_1_16, data, len, goodtext41);
 
     if(len > 1)
         errtotal += checkIncremental(len - 1, data, len, goodtext41);
@@ -194,6 +250,8 @@ static void checkData(const char * name, const void * data, size_t len, const ch
     errtotal += checkRandomMixedSizes(data, len, goodtext41);
 
     printf("Errors in %s: %d\n", name, errtotal);
+
+    return errtotal;
 }
 
 static void * reallocOrFree(void * ptr, size_t newsize)
@@ -306,13 +364,15 @@ static int checkAndAdjustLine(char * line)
     return 1;
 }
 
-static void doitOnFile(FILE * f)
+static int doitOnFile(FILE * f)
 {
     const char * fname;
     char line[MYMAXLINE + 1];
     void * ptr;
     size_t len;
+    int ret;
 
+    ret = 0;
     while(1)
     {
         line[0] = '\0';
@@ -335,35 +395,40 @@ static void doitOnFile(FILE * f)
 
         ptr = openAndLoadFile(fname, &len);
         if(ptr)
-            checkData(fname, ptr, len, line);
+            ret += checkData(fname, ptr, len, line);
 
         free(ptr);
     }
+
+    return ret;
 }
 
-static void doit(const char * fname)
+static int doit(const char * fname)
 {
+    int ret = 0;
+
     /* special case, - = stdin and don't close it either? */
     if(0 == strcmp(fname, "-"))
     {
-        doitOnFile(stdin);
-        return;
+        ret += doitOnFile(stdin);
+        return ret;
     }
 
     FILE * f = fopen(fname, "rb");
     if(!f)
     {
         printf("failed to open %s\n", fname);
-        return;
+        return ret;
     }
 
-    doitOnFile(f);
+    ret += doitOnFile(f);
     fclose(f);
+    return ret;
 }
 
 int main(int argc, char ** argv)
 {
-    int i;
+    int i, totalerr;
     unsigned seed;
     char c = 'x';
 
@@ -371,12 +436,14 @@ int main(int argc, char ** argv)
     srand(seed);
     printf("seed = %u\n", seed);
 
-    checkEmpty();
-    checkData("kTestData", kTestData, strlen(kTestData), kTestSha1);
-    checkData("oneLowercaseX", &c, 1, kSha1OfLowercaseX);
+    totalerr = 0;
+    totalerr += checkEmpty();
+    totalerr += checkData("kTestData", kTestData, strlen(kTestData), kTestSha1);
+    totalerr += checkData("oneLowercaseX", &c, 1, kSha1OfLowercaseX);
 
     for(i = 1; i < argc; ++i)
-        doit(argv[i]);
+        totalerr += doit(argv[i]);
 
+    printf("TOTAL ERRORS IN FILES THAT OPENED: %d\n", totalerr);
     return 0;
 }
