@@ -251,6 +251,7 @@ void blasha1_text(const void * data, blasha1_u64_t datalen, char * digest41)
 void blasha1_init(blasha1_t * c)
 {
     c->size = 0;
+    /* constants from sha1 spec: */
     c->h[0] = 0x67452301u;
     c->h[1] = 0xefcdab89u;
     c->h[2] = 0x98badcfeu;
@@ -264,6 +265,12 @@ void blasha1_update(blasha1_t * c, const void * data, blasha1_u64_t datalen)
 
     if(data == NULL || datalen == 0u)
         return;
+
+    /* the if and while are copy pasted twice to handle all situations:
+     * 1. state has bytes from incomplete block or not
+     * 2. new data is enough to complete a block or not
+     * 3. new data completes a block then starts new incomplete block or not
+     * no second if + while pair => hash errors (tester.exe catches them) */
 
     if(c->size % 64 == 0)
     {
