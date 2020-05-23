@@ -37,7 +37,7 @@ int main(int argc, char ** argv)
                 break;
         }
 
-        blasha1_get_text(&c, textdigest);
+        blasha1_finish_text(&c, textdigest);
         fclose(f);
         printf("%s *%s\n", textdigest, argv[i]);
     }

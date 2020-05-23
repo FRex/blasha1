@@ -34,9 +34,9 @@ void blasha1_init(blasha1_t * c);
 /* feed data into the state, which changes it */
 void blasha1_update(blasha1_t * c, const void * data, blasha1_u64_t datalen);
 
-/* get digest of hashing so far, text version includes nul term */
-void blasha1_get_binary(const blasha1_t * c, blasha1_byte_t * digest20);
-void blasha1_get_text(const blasha1_t * c, char * digest41);
+/* get the digest and reinit the state, text version includes nul term */
+void blasha1_finish_binary(blasha1_t * c, blasha1_byte_t * digest20);
+void blasha1_finish_text(blasha1_t * c, char * digest41);
 
 #endif /* BLASHA1_H */
 
@@ -214,7 +214,7 @@ void blasha1_binary(const void * data, blasha1_u64_t datalen, blasha1_byte_t * d
 #undef BLASHA1_PRIV_CHUNKSIZE
 
     blasha1_update(&state, data, datalen);
-    blasha1_get_binary(&state, digest20);
+    blasha1_finish_binary(&state, digest20);
 }
 
 static char blasha1_priv_hexdigit(int val)
@@ -318,7 +318,7 @@ void blasha1_update(blasha1_t * c, const void * data, blasha1_u64_t datalen)
     }
 }
 
-void blasha1_get_binary(const blasha1_t * c, blasha1_byte_t * digest20)
+void blasha1_finish_binary(blasha1_t * c, blasha1_byte_t * digest20)
 {
     blasha1_u32_t h[5] = { c->h[0], c->h[1], c->h[2], c->h[3], c->h[4] };
     blasha1_byte_t tmp[2 * 64];
@@ -346,12 +346,14 @@ void blasha1_get_binary(const blasha1_t * c, blasha1_byte_t * digest20)
 
     for(i = 0; i < 5; ++i)
         blasha1_priv_writeBigU32(digest20 + i * 4, h[i]);
+
+    blasha1_init(c);
 }
 
-void blasha1_get_text(const blasha1_t * c, char * digest41)
+void blasha1_finish_text(blasha1_t * c, char * digest41)
 {
     blasha1_byte_t d[20];
-    blasha1_get_binary(c, d);
+    blasha1_finish_binary(c, d);
     blasha1_priv_binary_digest_to_hex(d, digest41);
 }
 

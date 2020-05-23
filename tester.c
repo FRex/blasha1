@@ -38,7 +38,7 @@ static int checkEmpty(void)
         trashMemory(&sha1, sizeof(blasha1_t), i);
 
         blasha1_init(&sha1);
-        blasha1_get_text(&sha1, text);
+        blasha1_finish_text(&sha1, text);
         if(0 != strcmp(kEmptySha1, text))
         {
             ++errors;
@@ -48,7 +48,7 @@ static int checkEmpty(void)
         blasha1_update(&sha1, NULL, 123);
         blasha1_update(&sha1, &sha1, 0);
         blasha1_update(&sha1, NULL, 0);
-        blasha1_get_text(&sha1, text);
+        blasha1_finish_text(&sha1, text);
         if(0 != strcmp(kEmptySha1, text))
         {
             ++errors;
@@ -124,7 +124,7 @@ static int checkIncremental(int amount, const void * data, size_t len, const cha
                 blasha1_update(&sha1, cdata + j, amount);
         }
 
-        blasha1_get_text(&sha1, text);
+        blasha1_finish_text(&sha1, text);
         if(0 != strcmp(goodtext41, text))
         {
             ++errors;
@@ -169,7 +169,7 @@ static int checkInSizes(const int * sizes, const void * data, size_t len, const 
             j += amount;
         } /* while 1 */
 
-        blasha1_get_text(&sha1, text);
+        blasha1_finish_text(&sha1, text);
         if(0 != strcmp(goodtext41, text))
         {
             ++errors;
@@ -207,7 +207,7 @@ static int checkRandomMixedSizes(const void * data, size_t len, const char * goo
             j += amount;
         }
 
-        blasha1_get_text(&sha1, text);
+        blasha1_finish_text(&sha1, text);
         if(0 != strcmp(goodtext41, text))
         {
             ++errors;
