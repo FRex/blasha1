@@ -73,11 +73,7 @@ static void blasha1_priv_dochunk(const blasha1_byte_t * chunk, blasha1_u32_t * h
     for(i = 0; i < 16; ++i)
         w[i] = blasha1_priv_bigU32(chunk + i * 4);
 
-    /*
-    for(i = 16; i < 80; ++i)
-        w[i] = blasha1_priv_leftrotate(w[i - 3] ^ w[i - 8] ^ w[i - 14] ^ w[i - 16], 1);
-    */
-
+    /* a w[80] array and precomputing into it was slower than this */
     /* todo: clean up */
 
 #define BLASHA1_PRIV_QCHUNK(i, k, f){\
