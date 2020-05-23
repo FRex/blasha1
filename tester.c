@@ -55,6 +55,23 @@ static int checkEmpty(void)
             printf("wrong empty sha1 after feeding ptr=NULL len=0 data: %s\n", text);
         }
 
+        /* just to get some data into the state and then finish it */
+        blasha1_update(&sha1, &sha1, sizeof(sha1));
+        blasha1_finish_text(&sha1, text);
+        if(0 == strcmp(kEmptySha1, text))
+        {
+            ++errors;
+            printf("empty sha1 despite feeding some data into a state\n");
+        }
+
+        /* after reinit in last finish this should get empty hash */
+        blasha1_finish_text(&sha1, text);
+        if(0 != strcmp(kEmptySha1, text))
+        {
+            ++errors;
+            printf("wrong empty sha1 after two finish calls in a row: %s\n", text);
+        }
+
         blasha1_text(&sha1, 0, text);
         if(0 != strcmp(kEmptySha1, text))
         {
