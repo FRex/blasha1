@@ -263,7 +263,7 @@ void blasha1_update(blasha1_t * c, const void * data, blasha1_u64_t datalen)
 {
     const blasha1_byte_t * bytes = (const blasha1_byte_t *)data;
 
-    if(data == NULL || datalen == 0u)
+    if(!data || datalen == 0u)
         return;
 
     /* the if and while are copy pasted twice to handle all situations:
