@@ -45,7 +45,7 @@ void blasha1_finish_text(blasha1_t * c, char * digest41);
 #ifdef BLASHA1_IMPLEMENTATION
 
 /* let's check that our 2 fixed width types are right sizes... */
-#define BLASHA1_PRIV_STATIC_ASSERT(msg, expr) typedef int BLASHA1_PRIV_STATIC_ASSERT_##msg[(expr) * 2 - 1];
+#define BLASHA1_PRIV_STATIC_ASSERT(msg, expr) typedef int BLASHA1_PRIV_STATIC_ASSERT_##msg[(expr) * 2 - 1]
 BLASHA1_PRIV_STATIC_ASSERT(uint32_is_4_bytes, sizeof(blasha1_u32_t) == 4);
 BLASHA1_PRIV_STATIC_ASSERT(uint64_is_8_bytes, sizeof(blasha1_u64_t) == 8);
 #undef BLASHA1_PRIV_STATIC_ASSERT
@@ -316,9 +316,12 @@ void blasha1_update(blasha1_t * c, const void * data, blasha1_u64_t datalen)
 
 void blasha1_finish_binary(blasha1_t * c, blasha1_byte_t * digest20)
 {
-    blasha1_u32_t h[5] = { c->h[0], c->h[1], c->h[2], c->h[3], c->h[4] };
+    blasha1_u32_t h[5];
     blasha1_byte_t tmp[2 * 64];
     int lastchunklen, i;
+
+    for(i = 0; i < 5; ++i)
+        h[i] = c->h[i];
 
     for(i = 0; i < 2 * 64; ++i)
         tmp[i] = 0x0;

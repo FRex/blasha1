@@ -8,9 +8,9 @@
 
 #define REPETITIONS 1
 
-const char * kTestData = "test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test";
+const char * kTestData = "test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test";
 
-const char * kTestSha1 = "f9730d2e153614e2ba058c21e59285f44d8ac109";
+const char * kTestSha1 = "fad2af79db05cee221de9785fe8e883449ff2180";
 const char * kEmptySha1 = "da39a3ee5e6b4b0d3255bfef95601890afd80709";
 
 const char * kSha1OfLowercaseX = "11f6ad8ec52a2984abaafd7c3b516503785c2072";
@@ -291,6 +291,8 @@ static void * loadFile(FILE * f, size_t * outfsize)
 
     while(1)
     {
+        size_t readc;
+
         if(bufsize - sofar == 0)
         {
             bufsize = bufsize + bufsize / 2 + 20;
@@ -299,7 +301,7 @@ static void * loadFile(FILE * f, size_t * outfsize)
                 return NULL;
         }
 
-        size_t readc = fread(((char*)ret) + sofar, 1, bufsize - sofar, f);
+        readc = fread(((char*)ret) + sofar, 1, bufsize - sofar, f);
         sofar += readc;
         if((readc == 0) && feof(f))
             break;
@@ -315,8 +317,9 @@ static void * loadFile(FILE * f, size_t * outfsize)
 static void * openAndLoadFile(const char * fname, size_t * outfsize)
 {
     void * ret;
-    FILE * f = fopen(fname, "rb");
+    FILE * f;
 
+    f = fopen(fname, "rb");
     if(!f)
     {
         printf("failed to open %s\n", fname);
@@ -423,6 +426,7 @@ static int doitOnFile(FILE * f)
 static int doit(const char * fname)
 {
     int ret = 0;
+    FILE * f;
 
     /* special case, - = stdin and don't close it either? */
     if(0 == strcmp(fname, "-"))
@@ -431,7 +435,7 @@ static int doit(const char * fname)
         return ret;
     }
 
-    FILE * f = fopen(fname, "rb");
+    f = fopen(fname, "rb");
     if(!f)
     {
         printf("failed to open %s\n", fname);
