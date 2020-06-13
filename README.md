@@ -30,9 +30,12 @@ In `bench.py` there is a Python script that does a test similar to one done by
 `test.sh` but prints the sorted hashing speeds (file size divided by time
 taken, so it favors big files where startup) too. It also runs `rampin` first.
 
+In `newbench.py` there is another Python script that prints min, max, average
+and median of the commands too.
+
 File `tester.c` is a program that tests various edge cases and block sizes.
 
-Example run of `bench.py` on an already cached (hence `rampin` running at RAM
+Example run of `bench.py` and `newbench.py` on an already cached (hence `rampin` running at RAM
 speed) big file (with two different `sha1sum.exe` files):
 ```
 $ python bench.py
@@ -47,6 +50,18 @@ All hashes match: c6f8a50e6a3bb11fcc5695039362da3621f7c41b *hehe
   363.862 MiB/s - C:/Program Files/Git/usr/bin/perl.exe C:/Program Files/Git/usr/bin/core_perl/shasum
   360.976 MiB/s - python sha1.py
   169.359 MiB/s - busybox sha1sum
+```
+
+```
+$ python newbench.py
+file: hehe, size: 1024.0 MiB, 7 repetitions, sorted by med
+            cmd|          min|          max|          avg|          med
+---------------|-------------|-------------|-------------|-------------
+   openssl sha1|623.534 MiB/s|611.294 MiB/s|617.858 MiB/s|618.576 MiB/s
+   ./native.exe|545.441 MiB/s|535.286 MiB/s|540.261 MiB/s|540.515 MiB/s
+./mysha1sum.exe|498.638 MiB/s|489.805 MiB/s|494.812 MiB/s|495.960 MiB/s
+        sha1sum|448.375 MiB/s|433.114 MiB/s|442.559 MiB/s|444.187 MiB/s
+ python sha1.py|381.382 MiB/s|366.942 MiB/s|375.433 MiB/s|378.010 MiB/s
 ```
 
 On a VitualBox Linux VM (Fedora 31) where `sha1sum` and Python's `hashlib.sha1`
