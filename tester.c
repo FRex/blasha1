@@ -395,8 +395,13 @@ static int doitOnFile(FILE * f)
     ret = 0;
     while(1)
     {
-        line[0] = '\0';
-        fgets(line, MYMAXLINE + 1, f);
+        line[0] = '\0'; /* if fgets reads 0 bytes due to eof, line is not modified so make it empty for that */
+        if(!fgets(line, MYMAXLINE + 1, f))
+        {
+            /* if fgets failed due to error and not eof then line is indeterminate so set it to empty */
+            if(ferror(f))
+                line[0] = '\0';
+        }
 
         if(!checkAndAdjustLine(line))
             break;
