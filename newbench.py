@@ -35,7 +35,7 @@ for c in cmds:
 rows = []
 for i, v in times.items():
     v = sorted(v)
-    rows.append((i, v[0], v[-1], sum(v) / len(v), statistics.median(v)))
+    rows.append((i, v[-1], v[0], sum(v) / len(v), statistics.median(v)))
 
 headers = ('cmd', 'min', 'max', 'avg', 'med')
 widths = len(headers) * [0]
