@@ -96,86 +96,28 @@ static void blasha1_priv_dochunk(const blasha1_byte_t * chunk, blasha1_u32_t * h
     a = tmp;\
     }
 
-    BLASHA1_PRIV_QCHUNK(0, 0x5a827999u, (b & c) | ((~b) & d));
-    BLASHA1_PRIV_QCHUNK(1, 0x5a827999u, (b & c) | ((~b) & d));
-    BLASHA1_PRIV_QCHUNK(2, 0x5a827999u, (b & c) | ((~b) & d));
-    BLASHA1_PRIV_QCHUNK(3, 0x5a827999u, (b & c) | ((~b) & d));
-    BLASHA1_PRIV_QCHUNK(4, 0x5a827999u, (b & c) | ((~b) & d));
-    BLASHA1_PRIV_QCHUNK(5, 0x5a827999u, (b & c) | ((~b) & d));
-    BLASHA1_PRIV_QCHUNK(6, 0x5a827999u, (b & c) | ((~b) & d));
-    BLASHA1_PRIV_QCHUNK(7, 0x5a827999u, (b & c) | ((~b) & d));
-    BLASHA1_PRIV_QCHUNK(8, 0x5a827999u, (b & c) | ((~b) & d));
-    BLASHA1_PRIV_QCHUNK(9, 0x5a827999u, (b & c) | ((~b) & d));
-    BLASHA1_PRIV_QCHUNK(10, 0x5a827999u, (b & c) | ((~b) & d));
-    BLASHA1_PRIV_QCHUNK(11, 0x5a827999u, (b & c) | ((~b) & d));
-    BLASHA1_PRIV_QCHUNK(12, 0x5a827999u, (b & c) | ((~b) & d));
-    BLASHA1_PRIV_QCHUNK(13, 0x5a827999u, (b & c) | ((~b) & d));
-    BLASHA1_PRIV_QCHUNK(14, 0x5a827999u, (b & c) | ((~b) & d));
-    BLASHA1_PRIV_QCHUNK(15, 0x5a827999u, (b & c) | ((~b) & d));
-    BLASHA1_PRIV_QCHUNK(16, 0x5a827999u, (b & c) | ((~b) & d));
-    BLASHA1_PRIV_QCHUNK(17, 0x5a827999u, (b & c) | ((~b) & d));
-    BLASHA1_PRIV_QCHUNK(18, 0x5a827999u, (b & c) | ((~b) & d));
-    BLASHA1_PRIV_QCHUNK(19, 0x5a827999u, (b & c) | ((~b) & d));
-    BLASHA1_PRIV_QCHUNK(20, 0x6ed9eba1u, b ^ c ^ d);
-    BLASHA1_PRIV_QCHUNK(21, 0x6ed9eba1u, b ^ c ^ d);
-    BLASHA1_PRIV_QCHUNK(22, 0x6ed9eba1u, b ^ c ^ d);
-    BLASHA1_PRIV_QCHUNK(23, 0x6ed9eba1u, b ^ c ^ d);
-    BLASHA1_PRIV_QCHUNK(24, 0x6ed9eba1u, b ^ c ^ d);
-    BLASHA1_PRIV_QCHUNK(25, 0x6ed9eba1u, b ^ c ^ d);
-    BLASHA1_PRIV_QCHUNK(26, 0x6ed9eba1u, b ^ c ^ d);
-    BLASHA1_PRIV_QCHUNK(27, 0x6ed9eba1u, b ^ c ^ d);
-    BLASHA1_PRIV_QCHUNK(28, 0x6ed9eba1u, b ^ c ^ d);
-    BLASHA1_PRIV_QCHUNK(29, 0x6ed9eba1u, b ^ c ^ d);
-    BLASHA1_PRIV_QCHUNK(30, 0x6ed9eba1u, b ^ c ^ d);
-    BLASHA1_PRIV_QCHUNK(31, 0x6ed9eba1u, b ^ c ^ d);
-    BLASHA1_PRIV_QCHUNK(32, 0x6ed9eba1u, b ^ c ^ d);
-    BLASHA1_PRIV_QCHUNK(33, 0x6ed9eba1u, b ^ c ^ d);
-    BLASHA1_PRIV_QCHUNK(34, 0x6ed9eba1u, b ^ c ^ d);
-    BLASHA1_PRIV_QCHUNK(35, 0x6ed9eba1u, b ^ c ^ d);
-    BLASHA1_PRIV_QCHUNK(36, 0x6ed9eba1u, b ^ c ^ d);
-    BLASHA1_PRIV_QCHUNK(37, 0x6ed9eba1u, b ^ c ^ d);
-    BLASHA1_PRIV_QCHUNK(38, 0x6ed9eba1u, b ^ c ^ d);
-    BLASHA1_PRIV_QCHUNK(39, 0x6ed9eba1u, b ^ c ^ d);
-    BLASHA1_PRIV_QCHUNK(40, 0x8f1bbcdcu, (b & c) | (b & d) | (c & d));
-    BLASHA1_PRIV_QCHUNK(41, 0x8f1bbcdcu, (b & c) | (b & d) | (c & d));
-    BLASHA1_PRIV_QCHUNK(42, 0x8f1bbcdcu, (b & c) | (b & d) | (c & d));
-    BLASHA1_PRIV_QCHUNK(43, 0x8f1bbcdcu, (b & c) | (b & d) | (c & d));
-    BLASHA1_PRIV_QCHUNK(44, 0x8f1bbcdcu, (b & c) | (b & d) | (c & d));
-    BLASHA1_PRIV_QCHUNK(45, 0x8f1bbcdcu, (b & c) | (b & d) | (c & d));
-    BLASHA1_PRIV_QCHUNK(46, 0x8f1bbcdcu, (b & c) | (b & d) | (c & d));
-    BLASHA1_PRIV_QCHUNK(47, 0x8f1bbcdcu, (b & c) | (b & d) | (c & d));
-    BLASHA1_PRIV_QCHUNK(48, 0x8f1bbcdcu, (b & c) | (b & d) | (c & d));
-    BLASHA1_PRIV_QCHUNK(49, 0x8f1bbcdcu, (b & c) | (b & d) | (c & d));
-    BLASHA1_PRIV_QCHUNK(50, 0x8f1bbcdcu, (b & c) | (b & d) | (c & d));
-    BLASHA1_PRIV_QCHUNK(51, 0x8f1bbcdcu, (b & c) | (b & d) | (c & d));
-    BLASHA1_PRIV_QCHUNK(52, 0x8f1bbcdcu, (b & c) | (b & d) | (c & d));
-    BLASHA1_PRIV_QCHUNK(53, 0x8f1bbcdcu, (b & c) | (b & d) | (c & d));
-    BLASHA1_PRIV_QCHUNK(54, 0x8f1bbcdcu, (b & c) | (b & d) | (c & d));
-    BLASHA1_PRIV_QCHUNK(55, 0x8f1bbcdcu, (b & c) | (b & d) | (c & d));
-    BLASHA1_PRIV_QCHUNK(56, 0x8f1bbcdcu, (b & c) | (b & d) | (c & d));
-    BLASHA1_PRIV_QCHUNK(57, 0x8f1bbcdcu, (b & c) | (b & d) | (c & d));
-    BLASHA1_PRIV_QCHUNK(58, 0x8f1bbcdcu, (b & c) | (b & d) | (c & d));
-    BLASHA1_PRIV_QCHUNK(59, 0x8f1bbcdcu, (b & c) | (b & d) | (c & d));
-    BLASHA1_PRIV_QCHUNK(60, 0xca62c1d6u, b ^ c ^ d);
-    BLASHA1_PRIV_QCHUNK(61, 0xca62c1d6u, b ^ c ^ d);
-    BLASHA1_PRIV_QCHUNK(62, 0xca62c1d6u, b ^ c ^ d);
-    BLASHA1_PRIV_QCHUNK(63, 0xca62c1d6u, b ^ c ^ d);
-    BLASHA1_PRIV_QCHUNK(64, 0xca62c1d6u, b ^ c ^ d);
-    BLASHA1_PRIV_QCHUNK(65, 0xca62c1d6u, b ^ c ^ d);
-    BLASHA1_PRIV_QCHUNK(66, 0xca62c1d6u, b ^ c ^ d);
-    BLASHA1_PRIV_QCHUNK(67, 0xca62c1d6u, b ^ c ^ d);
-    BLASHA1_PRIV_QCHUNK(68, 0xca62c1d6u, b ^ c ^ d);
-    BLASHA1_PRIV_QCHUNK(69, 0xca62c1d6u, b ^ c ^ d);
-    BLASHA1_PRIV_QCHUNK(70, 0xca62c1d6u, b ^ c ^ d);
-    BLASHA1_PRIV_QCHUNK(71, 0xca62c1d6u, b ^ c ^ d);
-    BLASHA1_PRIV_QCHUNK(72, 0xca62c1d6u, b ^ c ^ d);
-    BLASHA1_PRIV_QCHUNK(73, 0xca62c1d6u, b ^ c ^ d);
-    BLASHA1_PRIV_QCHUNK(74, 0xca62c1d6u, b ^ c ^ d);
-    BLASHA1_PRIV_QCHUNK(75, 0xca62c1d6u, b ^ c ^ d);
-    BLASHA1_PRIV_QCHUNK(76, 0xca62c1d6u, b ^ c ^ d);
-    BLASHA1_PRIV_QCHUNK(77, 0xca62c1d6u, b ^ c ^ d);
-    BLASHA1_PRIV_QCHUNK(78, 0xca62c1d6u, b ^ c ^ d);
-    BLASHA1_PRIV_QCHUNK(79, 0xca62c1d6u, b ^ c ^ d);
+    for(i = 0; i < 20; ++i)
+    {
+        BLASHA1_PRIV_QCHUNK(i, 0x5a827999u, (b & c) | ((~b) & d));
+    }
+
+    for(i = 20; i < 40; ++i)
+    {
+        BLASHA1_PRIV_QCHUNK(i, 0x6ed9eba1u, b ^ c ^ d);
+    }
+
+
+    for(i = 40; i < 60; ++i)
+    {
+        BLASHA1_PRIV_QCHUNK(i, 0x8f1bbcdcu, (b & c) | (b & d) | (c & d));
+    }
+
+
+    for(i = 60; i < 80; ++i)
+    {
+        BLASHA1_PRIV_QCHUNK(i, 0xca62c1d6u, b ^ c ^ d);
+    }
+
 #undef BLASHA1_PRIV_QCHUNK
 
     h[0] += a;
