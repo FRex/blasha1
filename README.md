@@ -77,3 +77,6 @@ All hashes match: 65b448bb43478646c0072b62e420b2cc8b46e014 *hehe
   429.585 MiB/s - ./mysha1sum.exe
   201.637 MiB/s - busybox sha1sum
 ```
+
+NOTE: BusyBox has an option to optimize for space instead of speed and until recently
+the option to enable performant [SHA1 was missing](https://bugs.busybox.net/show_bug.cgi?id=14391).
