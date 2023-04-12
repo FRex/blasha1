@@ -28,7 +28,7 @@ typedef struct blasha1 {
     blasha1_u32_t h[5];
 } blasha1_t;
 
-/* initialize the sha1 state (this is not just a memset to 0, so it must be called) */
+/* initialize the sha1 state (this is just a memset to 0, so its not always needed) */
 void blasha1_init(blasha1_t * c);
 
 /* feed data into the state, which changes it */
@@ -231,6 +231,19 @@ static char blasha1_priv_hexdigit(int val)
     return 'f';
 }
 
+static void blasha1_priv_ensure_init(blasha1_t * c)
+{
+    if(c->size == 0)
+    {
+        /* constants from sha1 spec: */
+        c->h[0] = 0x67452301u;
+        c->h[1] = 0xefcdab89u;
+        c->h[2] = 0x98badcfeu;
+        c->h[3] = 0x10325476u;
+        c->h[4] = 0xc3d2e1F0u;
+    }
+}
+
 static void blasha1_priv_binary_digest_to_hex(const blasha1_byte_t * d20, char * hex41)
 {
     int i;
@@ -253,13 +266,10 @@ void blasha1_text(const void * data, blasha1_u64_t datalen, char * digest41)
 
 void blasha1_init(blasha1_t * c)
 {
-    c->size = 0;
-    /* constants from sha1 spec: */
-    c->h[0] = 0x67452301u;
-    c->h[1] = 0xefcdab89u;
-    c->h[2] = 0x98badcfeu;
-    c->h[3] = 0x10325476u;
-    c->h[4] = 0xc3d2e1F0u;
+    int i;
+    blasha1_byte_t * bytes = (blasha1_byte_t*)c;
+    for(i = 0; i < (int)sizeof(blasha1_t); ++i)
+        bytes[i] = 0x0;
 }
 
 void blasha1_update(blasha1_t * c, const void * data, blasha1_u64_t datalen)
@@ -268,6 +278,8 @@ void blasha1_update(blasha1_t * c, const void * data, blasha1_u64_t datalen)
 
     if(!data || datalen == 0u)
         return;
+
+    blasha1_priv_ensure_init(c);
 
     /* the if and while are copy pasted twice to handle all situations:
      * 1. state has bytes from incomplete block or not
@@ -326,6 +338,8 @@ void blasha1_finish_binary(blasha1_t * c, blasha1_byte_t * digest20)
     blasha1_u32_t h[5];
     blasha1_byte_t tmp[2 * 64];
     int lastchunklen, i;
+
+    blasha1_priv_ensure_init(c);
 
     for(i = 0; i < 5; ++i)
         h[i] = c->h[i];
