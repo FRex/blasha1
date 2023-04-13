@@ -206,16 +206,6 @@ void blasha1_binary(const void * data, blasha1_u64_t datalen, blasha1_byte_t * d
     blasha1_t state;
 
     blasha1_init(&state);
-
-#define BLASHA1_PRIV_CHUNKSIZE (64 * 1024)
-    while(datalen >= BLASHA1_PRIV_CHUNKSIZE)
-    {
-        blasha1_update(&state, data, BLASHA1_PRIV_CHUNKSIZE);
-        datalen -= BLASHA1_PRIV_CHUNKSIZE;
-        data = ((const unsigned char*)data) + BLASHA1_PRIV_CHUNKSIZE;
-    } /* while */
-#undef BLASHA1_PRIV_CHUNKSIZE
-
     blasha1_update(&state, data, datalen);
     blasha1_finish_binary(&state, digest20);
 }
