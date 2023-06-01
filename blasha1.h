@@ -7,6 +7,7 @@
  * header and implementation parts should work as any C or C++ version, so if
  * you mix C and C++ and use this lib in both you'll need own extern "C" */
 
+/* see the end of this file for code of a sha1sum like example program */
 
 /* fixed size unsigned types needed (the only problematic one is uint64): */
 typedef unsigned blasha1_u32_t;
@@ -366,5 +367,58 @@ void blasha1_finish_text(blasha1_t * c, char * digest41)
     blasha1_finish_binary(c, d);
     blasha1_priv_binary_digest_to_hex(d, digest41);
 }
+
+/* demo program, ready to copy paste into its own .c file, that works like sha1sum: */
+/*
+
+#include <stdlib.h>
+#include <stdio.h>
+
+#define BLASHA1_IMPLEMENTATION
+#include "blasha1.h"
+
+#define mybufsize (1 * 1024 * 1024)
+
+int main(int argc, char ** argv)
+{
+    blasha1_t c;
+    char * data;
+    char textdigest[41];
+    int i;
+
+    data = (char*)malloc(mybufsize);
+    if(!data)
+        return 1;
+
+    for(i = 1; i < argc; ++i)
+    {
+        FILE * f = fopen(argv[i], "rb");
+
+        if(!f)
+        {
+            fprintf(stderr, "Failed to fopen file '%s'\n", argv[i]);
+            continue;
+        }
+
+        blasha1_init(&c);
+
+        while(1)
+        {
+            const size_t readc = fread(data, 1, mybufsize, f);
+            blasha1_update(&c, data, readc);
+            if(feof(f))
+                break;
+        }
+
+        blasha1_finish_text(&c, textdigest);
+        fclose(f);
+        printf("%s *%s\n", textdigest, argv[i]);
+    }
+
+    free(data);
+    return 0;
+}
+
+*/
 
 #endif /* BLASHA1_IMPLEMENTATION */
