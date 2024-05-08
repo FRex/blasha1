@@ -39,6 +39,10 @@ void blasha1_update(blasha1_t * c, const void * data, blasha1_u64_t datalen);
 void blasha1_finish_binary_reinit(blasha1_t * c, blasha1_byte_t * digest20);
 void blasha1_finish_text_reinit(blasha1_t * c, char * digest41);
 
+/* get the digest from const state, text version includes nul term */
+void blasha1_finish_binary_const(const blasha1_t * c, blasha1_byte_t * digest20);
+void blasha1_finish_text_const(const blasha1_t * c, char * digest41);
+
 #endif /* BLASHA1_H */
 
 
@@ -366,6 +370,18 @@ void blasha1_finish_text_reinit(blasha1_t * c, char * digest41)
     blasha1_byte_t d[20];
     blasha1_finish_binary_reinit(c, d);
     blasha1_priv_binary_digest_to_hex(d, digest41);
+}
+
+void blasha1_finish_binary_const(const blasha1_t * c, blasha1_byte_t * digest20)
+{
+    blasha1_t cc = *c;
+    blasha1_finish_binary_reinit(&cc, digest20);
+}
+
+void blasha1_finish_text_const(const blasha1_t * c, char * digest41)
+{
+    blasha1_t cc = *c;
+    blasha1_finish_text_reinit(&cc, digest41);
 }
 
 /* demo program, ready to copy paste into its own .c file, that works like sha1sum: */
