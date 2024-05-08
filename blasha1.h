@@ -36,8 +36,8 @@ void blasha1_init(blasha1_t * c);
 void blasha1_update(blasha1_t * c, const void * data, blasha1_u64_t datalen);
 
 /* get the digest and reinit the state, text version includes nul term */
-void blasha1_finish_binary(blasha1_t * c, blasha1_byte_t * digest20);
-void blasha1_finish_text(blasha1_t * c, char * digest41);
+void blasha1_finish_binary_reinit(blasha1_t * c, blasha1_byte_t * digest20);
+void blasha1_finish_text_reinit(blasha1_t * c, char * digest41);
 
 #endif /* BLASHA1_H */
 
@@ -208,7 +208,7 @@ void blasha1_binary(const void * data, blasha1_u64_t datalen, blasha1_byte_t * d
 
     blasha1_init(&state);
     blasha1_update(&state, data, datalen);
-    blasha1_finish_binary(&state, digest20);
+    blasha1_finish_binary_reinit(&state, digest20);
 }
 
 static char blasha1_priv_hexdigit(int val)
@@ -324,7 +324,7 @@ void blasha1_update(blasha1_t * c, const void * data, blasha1_u64_t datalen)
     }
 }
 
-void blasha1_finish_binary(blasha1_t * c, blasha1_byte_t * digest20)
+void blasha1_finish_binary_reinit(blasha1_t * c, blasha1_byte_t * digest20)
 {
     blasha1_u32_t h[5];
     blasha1_byte_t tmp[2 * 64];
@@ -361,10 +361,10 @@ void blasha1_finish_binary(blasha1_t * c, blasha1_byte_t * digest20)
     blasha1_init(c);
 }
 
-void blasha1_finish_text(blasha1_t * c, char * digest41)
+void blasha1_finish_text_reinit(blasha1_t * c, char * digest41)
 {
     blasha1_byte_t d[20];
-    blasha1_finish_binary(c, d);
+    blasha1_finish_binary_reinit(c, d);
     blasha1_priv_binary_digest_to_hex(d, digest41);
 }
 
@@ -410,7 +410,7 @@ int main(int argc, char ** argv)
                 break;
         }
 
-        blasha1_finish_text(&c, textdigest);
+        blasha1_finish_text_reinit(&c, textdigest);
         fclose(f);
         printf("%s *%s\n", textdigest, argv[i]);
     }
