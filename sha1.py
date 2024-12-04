@@ -1,14 +1,9 @@
 from sys import argv, stderr
-from hashlib import sha1
+from hashlib import sha1, file_digest
 
 try:
-    f = open(argv[1], 'rb')
-    c = sha1()
-    while True:
-        data = f.read(64 * 1024 * 1024)
-        if len(data) == 0:
-            break
-        c.update(data)
+    f = open(argv[1], "rb")
+    c = file_digest(f, sha1)
     print(f"{c.hexdigest()} *{argv[1]}")
 except FileNotFoundError as e:
     print(e, file=stderr)

@@ -36,46 +36,32 @@ and median of the commands too.
 File `tester.c` is a program that tests various edge cases and block sizes.
 
 Example run of `bench.py` and `newbench.py` on an already cached (hence `rampin` running at RAM
-speed) big file (with two different `sha1sum.exe` files):
+speed) big file:
 ```
-$ python bench.py
+$ python3 bench.py
 hehe is 1.000 GiB
-All hashes match: c6f8a50e6a3bb11fcc5695039362da3621f7c41b *hehe
- 2406.069 MiB/s - rampin -0q
-  600.912 MiB/s - openssl sha1
-  511.919 MiB/s - ./native.exe
-  472.199 MiB/s - ./mysha1sum.exe
-  434.433 MiB/s - C:/Program Files/Haskell Platform/8.6.5/msys/usr/bin/sha1sum.exe
-  431.084 MiB/s - C:/Program Files/Git/usr/bin/sha1sum.exe
-  363.862 MiB/s - C:/Program Files/Git/usr/bin/perl.exe C:/Program Files/Git/usr/bin/core_perl/shasum
-  360.976 MiB/s - python sha1.py
-  169.359 MiB/s - busybox sha1sum
+All hashes match: 2a492f15396a6768bcbca016993f4b4c8b0b5307 *hehe
+ 2756.392 MiB/s - rampin -0q
+ 1506.026 MiB/s - python sha1.py
+ 1204.939 MiB/s - openssl sha1
+  875.751 MiB/s - ./native.exe
+  752.454 MiB/s - ./mysha1sum.exe
+  729.311 MiB/s - C:/Program Files/Git/usr/bin/sha1sum.exe
+  624.007 MiB/s - C:/Program Files/Git/usr/bin/perl.exe C:/Program Files/Git/usr/bin/core_perl/shasum
+  275.630 MiB/s - busybox sha1sum
 ```
 
 ```
-$ python newbench.py
+$ python3 newbench.py
 file: hehe, size: 1024.0 MiB, 7 repetitions, sorted by med
-            cmd|          min|          max|          avg|          med
----------------|-------------|-------------|-------------|-------------
-   openssl sha1|623.534 MiB/s|611.294 MiB/s|617.858 MiB/s|618.576 MiB/s
-   ./native.exe|545.441 MiB/s|535.286 MiB/s|540.261 MiB/s|540.515 MiB/s
-./mysha1sum.exe|498.638 MiB/s|489.805 MiB/s|494.812 MiB/s|495.960 MiB/s
-        sha1sum|448.375 MiB/s|433.114 MiB/s|442.559 MiB/s|444.187 MiB/s
- python sha1.py|381.382 MiB/s|366.942 MiB/s|375.433 MiB/s|378.010 MiB/s
-```
-
-On a VitualBox Linux VM (Fedora 31) where `sha1sum` and Python's `hashlib.sha1`
-both use OpenSSL's `libcrypto.so`:
-```
-[ff@localhost blasha1]$ python bench.py
-hehe is 1.000 GiB
-All hashes match: 65b448bb43478646c0072b62e420b2cc8b46e014 *hehe
-  699.686 MiB/s - sha1sum
-  649.414 MiB/s - openssl sha1
-  544.726 MiB/s - python sha1.py
-  453.495 MiB/s - ./native.exe
-  429.585 MiB/s - ./mysha1sum.exe
-  201.637 MiB/s - busybox sha1sum
+            cmd|           min|           max|           avg|           med
+---------------|--------------|--------------|--------------|--------------
+ python sha1.py|1533.972 MiB/s|1623.957 MiB/s|1596.982 MiB/s|1602.804 MiB/s
+   openssl sha1|1244.188 MiB/s|1286.648 MiB/s|1271.724 MiB/s|1276.805 MiB/s
+   ./native.exe| 886.479 MiB/s| 920.421 MiB/s| 906.993 MiB/s| 915.417 MiB/s
+./mysha1sum.exe| 756.169 MiB/s| 789.744 MiB/s| 780.363 MiB/s| 785.974 MiB/s
+        sha1sum| 742.695 MiB/s| 776.583 MiB/s| 763.897 MiB/s| 771.197 MiB/s
+busybox sha1sum| 278.332 MiB/s| 287.190 MiB/s| 283.653 MiB/s| 284.513 MiB/s
 ```
 
 NOTE: BusyBox has an option to optimize for space instead of speed and until recently
